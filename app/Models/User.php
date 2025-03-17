@@ -12,36 +12,36 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * Los atributos que son asignables de manera masiva.
+     * Los atributos que son asignables de manera masiva. 
      *
-     * @var array<string>
+     * @var array<string> 
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'name', 
+        'email', 
+        'password', 
     ];
 
     /**
-     * Los atributos que deben estar ocultos durante la serialización.
+     * *Los atributos que deben estar ocultos durante la serialización.
      *
-     * @var array<string>
+     * @var array<string> 
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
+    protected $hidden = [ 
+        'password', 
+        'remember_token', 
     ];
-
+/**user */
     /**
      * Los atributos que deben ser casteados a tipos específicos.
      *
-     * @return array<string, string>
+     * @return array<string, string> 
      */
-    protected function casts(): array
+    protected function casts(): array 
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+        return [ 
+            'email_verified_at' => 'datetime', 
+            'password' => 'hashed', 
         ];
     }
 }
