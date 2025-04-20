@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
@@ -13,7 +13,10 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        Admin::factory(1)->create();
+        Admin::create([
+            'name' => 'Super Admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password123'), // Usa bcrypt para login correcto
+        ]);
     }
 }

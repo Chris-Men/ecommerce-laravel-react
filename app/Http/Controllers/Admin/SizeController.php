@@ -33,16 +33,26 @@ class SizeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AddSizeRequest $request)
-    {
-        //
-        if($request->validated()) {
-            Size::create($request->validated());
-            return redirect()->route('admin.sizes.index')->with([
-                'success' => 'Medida se ha añadido correctamente.'
-            ]);
-        }
+
+     public function store(AddSizeRequest $request)
+{
+    $data = $request->validated();
+    $data['slug'] = \Illuminate\Support\Str::slug($data['name']);
+    $size = Size::create($data);
+
+    // Si la petición espera JSON (como Postman), devolvemos JSON
+    if ($request->wantsJson()) {
+        return response()->json([
+            'message' => 'Medida creada correctamente.',
+            'data' => $size
+        ], 201);
     }
+
+    // Si no es petición JSON, redireccionamos (caso panel admin web)
+    return redirect()->route('admin.sizes.index')->with([
+        'success' => 'Medida se ha añadido correctamente.'
+    ]);
+}
 
     /**
      * Display the specified resource.

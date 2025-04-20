@@ -14,34 +14,63 @@ class ReviewController extends Controller
     public function index()
     {
         $reviews = Review::latest()->get();
-        return view('admin.reviews.index')->with([
-            'reviews' => $reviews
+
+        return response()->json([
+            'message' => 'Lista de reseñas',
+            'data' => $reviews
         ]);
+    }
+
+    /**
+     * Store a new review
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'user_id' => 'required|exists:users,id',
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string',
+        ]);
+
+        $review = Review::create([
+            'product_id' => $validated['product_id'],
+            'user_id' => $validated['user_id'],
+            'rating' => $validated['rating'],
+            'comment' => $validated['comment'] ?? null,
+            'approved' => false, // Puedes cambiar esto si quieres que se aprueben por defecto
+        ]);
+
+        return response()->json([
+            'message' => 'Reseña creada correctamente',
+            'data' => $review
+        ], 201);
     }
 
     /**
      * Approve or disapprove a review
      */
-    public function toggleApproveStatus(Review $review,$status)
+    public function toggleApproveStatus(Review $review, $status)
     {
         $review->update([
-            'approved' => $status
+            'approved' => filter_var($status, FILTER_VALIDATE_BOOLEAN)
         ]);
 
-        return redirect()->route('admin.reviews.index')->with([
-            'success' => 'La reseña se ha actualizado correctamente.'
+        return response()->json([
+            'message' => 'Estado de aprobación actualizado',
+            'data' => $review
         ]);
     }
 
     /**
-     * Delete reviews
+     * Delete a review
      */
     public function delete(Review $review)
     {
         $review->delete();
 
-        return redirect()->route('admin.reviews.index')->with([
-            'success' => 'La reseña se ha eliminado correctamente.'
+        return response()->json([
+            'message' => 'Reseña eliminada correctamente'
         ]);
     }
 }

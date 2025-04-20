@@ -2,46 +2,68 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
-    /**
-     * Los atributos que son asignables de manera masiva.
-     *
-     * @var array<string>
-     */
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'address',
+        'city',
+        'zip_code',
+        'country',
+        'phone_number',
+        'profile_image',
+        'profile_completed'
     ];
 
-    /**
-     * Los atributos que deben estar ocultos durante la serialización.
-     *
-     * @var array<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Los atributos que deben ser casteados a tipos específicos.
-     *
-     * @return array<string, string>
-     */
+    protected $appends = [
+        'image_path'
+    ];
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class)
+                    ->with('products')
+                    ->latest();
+    }
+
+    public function getImagePathAttribute()
+    {
+        return $this->profile_image
+            ? asset($this->profile_image)
+            : "https://cdn.pixabay.com/photo/2017/11/10/05/48/user-2935527_1280.png";
+    }
+
+    // Métodos requeridos por JWTSubject
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims(): array
+    {
+        return [];
     }
 }

@@ -13,15 +13,17 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->longText('body');
-            $table->integer('rating');
-            $table->boolean('approved')->default(0);
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->integer('rating');
+            $table->text('comment')->nullable();  // Asegúrate de que sea nullable
+            $table->string('title')->nullable();
             $table->timestamps();
         });
     }
+
+
+
 
     /**
      * Reverse the migrations.

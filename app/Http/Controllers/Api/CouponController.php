@@ -11,7 +11,7 @@ class CouponController extends Controller
     /**
      * Apply coupon
      */
-    public function applyCoupon(Request $request) 
+    public function applyCoupon(Request $request)
     {
         $coupon = Coupon::whereName($request->name)->first();
         if($coupon && $coupon->checkIfValid()) {
@@ -19,10 +19,36 @@ class CouponController extends Controller
                 'message' => 'Cupón aplicado exitosamente',
                 'coupon' => $coupon
             ]);
-        }else {
+        } else {
             return response()->json([
                 'error' => 'Cupón no válido o caducado'
             ]);
         }
+    }
+
+    /**
+     * Create a new coupon
+     */
+    public function store(Request $request)
+    {
+        // Validación de los campos recibidos
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:coupons,name',
+            'discount' => 'required|numeric|min:0',
+            'valid_until' => 'required|date|after:today',  // Asegura que la fecha no esté en el pasado
+        ]);
+
+        // Creación del nuevo cupón
+        $coupon = Coupon::create([
+            'name' => $validated['name'],
+            'discount' => $validated['discount'],
+            'valid_until' => $validated['valid_until'],
+        ]);
+
+        // Respuesta al cliente
+        return response()->json([
+            'message' => 'Cupón creado correctamente',
+            'coupon' => $coupon
+        ], 201);
     }
 }

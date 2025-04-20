@@ -14,7 +14,7 @@ use App\Http\Resources\ProductResource;
 class ProductController extends Controller
 {
     /**
-     * Get all the products
+     * Obtener todos los productos
      */
     public function index()
     {
@@ -29,7 +29,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Get product by slug
+     * Obtener producto por slug
      */
     public function show(Product $product)
     {
@@ -43,7 +43,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Filter products by category
+     * Filtrar productos por categoría
      */
     public function filterProductsByCategory(Category $category)
     {
@@ -59,7 +59,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Filter products by brand
+     * Filtrar productos por marca
      */
     public function filterProductsByBrand(Brand $brand)
     {
@@ -75,7 +75,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Filter products by color
+     * Filtrar productos por color
      */
     public function filterProductsByColor(Color $color)
     {
@@ -90,8 +90,8 @@ class ProductController extends Controller
         ]);
     }
 
-     /**
-     * Filter products by size
+    /**
+     * Filtrar productos por tamaño
      */
     public function filterProductsBySize(Size $size)
     {
@@ -107,7 +107,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Find products by term
+     * Buscar productos por término
      */
     public function findProductsByTerm($searchTerm)
     {
@@ -119,5 +119,36 @@ class ProductController extends Controller
             'brands' => Brand::has('products')->get(),
             'categories' => Category::has('products')->get()
         ]);
+    }
+
+    /**
+     * Crear un nuevo producto
+     */
+    public function store(Request $request)
+    {
+        // Validar los datos entrantes
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
+            'size_id' => 'required|exists:sizes,id',
+            'color_id' => 'required|exists:colors,id',
+            // Agrega las reglas de validación necesarias para otros campos
+        ]);
+
+        // Crear un nuevo producto
+        $product = Product::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'brand_id' => $request->brand_id,
+            'size_id' => $request->size_id,
+            'color_id' => $request->color_id,
+            // Agrega otros campos según sea necesario
+        ]);
+
+        // Retornar el producto creado
+        return response()->json(new ProductResource($product), 201);  // 201 es el código de estado para "Creado"
     }
 }

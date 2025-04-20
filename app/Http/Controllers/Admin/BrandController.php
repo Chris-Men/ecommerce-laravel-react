@@ -16,19 +16,11 @@ class BrandController extends Controller
      */
     public function index()
     {
-        //
-        return view('admin.brands.index')->with([
-            'brands' => Brand::latest()->get()
+        // Obtener todas las marcas y devolverlas como respuesta JSON
+        $brands = Brand::latest()->get();
+        return response()->json([
+            'brands' => $brands
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-        return view('admin.brands.create');
     }
 
     /**
@@ -36,15 +28,19 @@ class BrandController extends Controller
      */
     public function store(AddBrandRequest $request)
     {
-        //
-        if($request->validated()) {
-            $data = $request->validated();
-            $data['slug'] = Str::slug($request->name);
-            Brand::create($data);
-            return redirect()->route('admin.brands.index')->with([
-                'success' => 'La marca se ha añadido correctamente.'
-            ]);
-        }
+        // Obtener los datos validados del formulario
+        $data = $request->validated();
+        // Generar un slug a partir del nombre de la marca
+        $data['slug'] = Str::slug($data['name']);
+
+        // Crear la marca en la base de datos
+        $brand = Brand::create($data);
+
+        // Devolver una respuesta JSON con la marca creada
+        return response()->json([
+            'message' => 'Marca creada correctamente.',
+            'data' => $brand
+        ], 201);
     }
 
     /**
@@ -52,8 +48,10 @@ class BrandController extends Controller
      */
     public function show(Brand $brand)
     {
-        //
-        abort(404);
+        // Mostrar detalles de una marca específica
+        return response()->json([
+            'brand' => $brand
+        ]);
     }
 
     /**
@@ -61,10 +59,7 @@ class BrandController extends Controller
      */
     public function edit(Brand $brand)
     {
-        //
-        return view('admin.brands.edit')->with([
-            'brand' => $brand
-        ]);
+        // Este método no se usa para la API, así que lo omitimos aquí.
     }
 
     /**
@@ -72,13 +67,19 @@ class BrandController extends Controller
      */
     public function update(UpdateBrandRequest $request, Brand $brand)
     {
-        //
-        if($request->validated()) {
+        // Validar los datos de la solicitud
+        if ($request->validated()) {
+            // Obtener los datos validados
             $data = $request->validated();
-            $data['slug'] = Str::slug($request->name);
+            // Generar el slug actualizado
+            $data['slug'] = Str::slug($data['name']);
+            // Actualizar la marca
             $brand->update($data);
-            return redirect()->route('admin.brands.index')->with([
-                'success' => 'La marca se ha actualizado correctamente.'
+
+            // Devolver una respuesta JSON con la marca actualizada
+            return response()->json([
+                'message' => 'Marca actualizada correctamente.',
+                'data' => $brand
             ]);
         }
     }
@@ -88,10 +89,12 @@ class BrandController extends Controller
      */
     public function destroy(Brand $brand)
     {
-        //
+        // Eliminar la marca
         $brand->delete();
-        return redirect()->route('admin.brands.index')->with([
-            'success' => 'La marca se ha eliminado correctamente.'
+
+        // Devolver una respuesta JSON indicando que la marca fue eliminada
+        return response()->json([
+            'message' => 'Marca eliminada correctamente.'
         ]);
     }
 }

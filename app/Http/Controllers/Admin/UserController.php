@@ -19,6 +19,32 @@ class UserController extends Controller
         ]);
     }
 
+
+
+
+    public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:6|confirmed', // debes enviar también password_confirmation
+        'role' => 'nullable|string' // si usas roles
+    ]);
+
+    $user = User::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'password' => bcrypt($validated['password']),
+        'role' => $validated['role'] ?? 'user', // ajusta según tus columnas
+    ]);
+
+    return response()->json([
+        'message' => 'Usuario creado correctamente',
+        'user' => $user
+    ], 201);
+}
+
+
     /**
      * Delete users
      */

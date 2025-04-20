@@ -7,6 +7,7 @@ use App\Http\Requests\AddColorRequest;
 use App\Http\Requests\UpdateColorRequest;
 use App\Models\Color;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ColorController extends Controller
 {
@@ -33,16 +34,24 @@ class ColorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AddColorRequest $request)
-    {
-        //
-        if($request->validated()) {
-            Color::create($request->validated());
-            return redirect()->route('admin.colors.index')->with([
-                'success' => 'El color se ha añadido correctamente.'
-            ]);
-        }
+
+     public function store(AddColorRequest $request)
+{
+    $data = $request->validated();
+    $data['slug'] = Str::slug($data['name']);
+    $color = Color::create($data);
+
+    if ($request->wantsJson()) {
+        return response()->json([
+            'message' => 'Color creado correctamente.',
+            'data' => $color
+        ], 201);
     }
+
+    return redirect()->route('admin.colors.index')->with([
+        'success' => 'El color se ha añadido correctamente.'
+    ]);
+}
 
     /**
      * Display the specified resource.
