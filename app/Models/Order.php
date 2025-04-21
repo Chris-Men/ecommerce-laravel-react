@@ -11,6 +11,7 @@ class Order extends Model
     protected $fillable = ["qty","total","delivered_at","user_id",
         "coupon_id"];
 
+<<<<<<< HEAD
         public function products()
         {
             return $this->belongsToMany(Product::class)
@@ -18,6 +19,12 @@ class Order extends Model
                         ->withTimestamps();
         }
 
+=======
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
+>>>>>>> origin/Juan
 
     public function user()
     {

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     //
+<<<<<<< HEAD
     protected $fillable = [
         'name', 'slug', 'qty', 'price', 'description',
         'thumbnail', 'first_image', 'second_image', 'third_image',
@@ -16,6 +17,11 @@ class Product extends Model
 
 
 
+=======
+    protected $fillable = ["name","slug","qty","price",
+        "desc","thumbnail","first_image","second_image","third_image",
+        "status","category_id","brand_id"];
+>>>>>>> origin/Juan
 
     public function category()
     {
@@ -37,6 +43,7 @@ class Product extends Model
         return $this->belongsToMany(Size::class);
     }
 
+<<<<<<< HEAD
     public function products()
 {
     return $this->belongsToMany(Product::class)
@@ -44,6 +51,12 @@ class Product extends Model
                 ->withTimestamps();
 }
 
+=======
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class);
+    }
+>>>>>>> origin/Juan
 
     public function reviews()
     {
