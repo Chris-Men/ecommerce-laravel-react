@@ -18,14 +18,21 @@ return new class extends Migration
             $table->integer('qty')->default(0);
             $table->decimal('price', 10, 2);
             $table->longText('description')->nullable();
+
             $table->string('thumbnail')->nullable();
             $table->string('first_image')->nullable();
             $table->string('second_image')->nullable();
             $table->string('third_image')->nullable();
             $table->boolean('status')->default(true);
+
+            // Relaciones
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->foreignId('brand_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('color_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('size_id')->constrained()->cascadeOnDelete();
+
             $table->timestamps();
+
         });
     }
 
