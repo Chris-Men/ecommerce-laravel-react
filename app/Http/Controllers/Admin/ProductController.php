@@ -2,88 +2,186 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\Size;
+use App\Models\Brand;
+use App\Models\Color;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    // Listar todos los productos con categoría y marca
+    /**
+     * Obtener todos los productos
+     */
     public function index()
     {
-        return response()->json(
-            Product::with(['category', 'brand'])->latest()->get(),
-            200
+        return ProductResource::collection(
+            Product::with(['color', 'size', 'category', 'brand'])->latest()->get()
+        )->additional([
+            'colors' => Color::has('products')->get(),
+            'sizes' => Size::has('products')->get(),
+            'brands' => Brand::has('products')->get(),
+            'categories' => Category::has('products')->get(),
+        ]);
+    }
+
+    /**
+     * Obtener producto por slug
+     */
+    public function show(Product $product)
+    {
+        if (!$product) {
+            abort(404);
+        }
+
+        return ProductResource::make(
+            $product->load(['color', 'size', 'reviews', 'category', 'brand'])
         );
     }
 
-    // Crear un nuevo producto
+    /**
+     * Filtrar productos por categoría
+     */
+    public function filterProductsByCategory(Category $category)
+    {
+        return ProductResource::collection(
+            $category->products()->with(['color', 'size', 'category', 'brand'])->latest()->get()
+        )->additional([
+            'colors' => Color::has('products')->get(),
+            'sizes' => Size::has('products')->get(),
+            'brands' => Brand::has('products')->get(),
+            'categories' => Category::has('products')->get(),
+            'filter' => $category->name
+        ]);
+    }
+
+    /**
+     * Filtrar productos por marca
+     */
+    public function filterProductsByBrand(Brand $brand)
+    {
+        return ProductResource::collection(
+            $brand->products()->with(['color', 'size', 'category', 'brand'])->latest()->get()
+        )->additional([
+            'colors' => Color::has('products')->get(),
+            'sizes' => Size::has('products')->get(),
+            'brands' => Brand::has('products')->get(),
+            'categories' => Category::has('products')->get(),
+            'filter' => $brand->name
+        ]);
+    }
+
+    /**
+     * Filtrar productos por color
+     */
+    public function filterProductsByColor(Color $color)
+    {
+        return ProductResource::collection(
+            $color->products()->with(['color', 'size', 'category', 'brand'])->latest()->get()
+        )->additional([
+            'colors' => Color::has('products')->get(),
+            'sizes' => Size::has('products')->get(),
+            'brands' => Brand::has('products')->get(),
+            'categories' => Category::has('products')->get(),
+            'filter' => $color->name
+        ]);
+    }
+
+    /**
+     * Filtrar productos por tamaño
+     */
+    public function filterProductsBySize(Size $size)
+    {
+        return ProductResource::collection(
+            $size->products()->with(['color', 'size', 'category', 'brand'])->latest()->get()
+        )->additional([
+            'colors' => Color::has('products')->get(),
+            'sizes' => Size::has('products')->get(),
+            'brands' => Brand::has('products')->get(),
+            'categories' => Category::has('products')->get(),
+            'filter' => $size->name
+        ]);
+    }
+
+    /**
+     * Buscar productos por término
+     */
+    public function findProductsByTerm($searchTerm)
+    {
+        return ProductResource::collection(
+            Product::where('name', 'LIKE', '%' . $searchTerm . '%')->with(['color', 'size', 'category', 'brand'])->latest()->get()
+        )->additional([
+            'colors' => Color::has('products')->get(),
+            'sizes' => Size::has('products')->get(),
+            'brands' => Brand::has('products')->get(),
+            'categories' => Category::has('products')->get()
+        ]);
+    }
+
+    /**
+     * Crear un nuevo producto
+     */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|unique:products,slug',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'qty' => 'required|integer',
-            'thumbnail' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
-            'status' => 'required|boolean',
-            'first_image' => 'nullable|string',
-            'second_image' => 'nullable|string',
-            'third_image' => 'nullable|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255|unique:products,name',
+                'price' => 'required|numeric',
+                'category_id' => 'required|exists:categories,id',
+                'brand_id' => 'required|exists:brands,id',
+                'size_id' => 'required|exists:sizes,id',
+                'color_id' => 'required|exists:colors,id',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            $slug = $this->generateUniqueSlug($validated['name']);
+
+            $product = Product::create([
+                'name' => $validated['name'],
+                'slug' => $this->generateUniqueSlug($validated['name']),
+                'price' => $validated['price'],
+                'description' => $request->description,
+                'thumbnail' => $request->thumbnail,
+                'first_image' => $request->first_image,
+                'second_image' => $request->second_image,
+                'third_image' => $request->third_image,
+                'status' => $request->status ?? 'activo',
+                'qty' => $request->qty ?? 0,
+                'category_id' => $validated['category_id'],
+                'brand_id' => $validated['brand_id'],
+                'size_id' => $validated['size_id'],
+                'color_id' => $validated['color_id'],
+            ]);
+
+            return response()->json(new ProductResource($product), 201);
+
+        } catch (\Throwable $e) {
+            Log::error('Error en store(): ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Error al crear producto',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Generar un slug único basado en el nombre
+     */
+    private function generateUniqueSlug($name)
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (Product::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count++;
         }
 
-        $product = Product::create($validator->validated());
-
-        return response()->json($product, 201);
-    }
-
-    // Mostrar producto específico con relaciones
-    public function show(Product $product)
-    {
-        return response()->json($product->load(['category', 'brand']), 200);
-    }
-
-    // Actualizar producto
-    public function update(Request $request, Product $product)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|unique:products,slug',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'qty' => 'required|integer',
-            'thumbnail' => 'nullable|string',
-            'first_image' => 'nullable|string',
-            'second_image' => 'nullable|string',
-            'third_image' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
-            'status' => 'required|boolean',
-        ]);
-
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $product->update($validator->validated());
-
-        return response()->json($product, 200);
-    }
-
-    // Eliminar producto
-    public function destroy(Product $product)
-    {
-        $product->delete();
-
-        return response()->json(['message' => 'Producto eliminado correctamente'], 200);
+        return $slug;
     }
 }

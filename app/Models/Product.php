@@ -6,16 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    //
     protected $fillable = [
         'name', 'slug', 'qty', 'price', 'description',
         'thumbnail', 'first_image', 'second_image', 'third_image',
-        'status', 'category_id', 'brand_id'
+        'status', 'category_id', 'brand_id', 'color_id', 'size_id'
     ];
-
-
-
-
 
     public function category()
     {
@@ -27,29 +22,22 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
-    public function colors()
+    // Relación corregida: uno a muchos
+    public function color()
     {
-        return $this->belongsToMany(Color::class);
+        return $this->belongsTo(Color::class);
     }
 
-    public function sizes()
+    public function size()
     {
-        return $this->belongsToMany(Size::class);
+        return $this->belongsTo(Size::class);
     }
-
-    public function products()
-{
-    return $this->belongsToMany(Product::class)
-                ->withPivot('quantity')
-                ->withTimestamps();
-}
-
 
     public function reviews()
     {
         return $this->hasMany(Review::class)
             ->with('user')
-            ->where('approved',1)
+
             ->latest();
     }
 

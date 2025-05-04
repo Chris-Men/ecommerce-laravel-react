@@ -7,18 +7,25 @@ use App\Http\Requests\AuthAdminRequest;
 use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\Admin;
 
 class AdminController extends Controller
 {
+
+    public function publicList()
+    {
+        $admins = Admin::all(['name', 'email']);
+        return response()->json($admins);
+    }
     /**
      * Fetch today yesterday this month and this year orders
      */
     public function index()
     {
-        $todayOrders = Order::whereDay('created_at',Carbon::today())->get();
-        $yesterdayOrders = Order::whereDay('created_at',Carbon::yesterday())->get();
-        $monthOrders = Order::whereMonth('created_at',Carbon::now()->month)->get();
-        $yearOrders = Order::whereYear('created_at',Carbon::now()->year)->get();
+        $todayOrders = Order::whereDay('created_at', Carbon::today())->get();
+        $yesterdayOrders = Order::whereDay('created_at', Carbon::yesterday())->get();
+        $monthOrders = Order::whereMonth('created_at', Carbon::now()->month)->get();
+        $yearOrders = Order::whereYear('created_at', Carbon::now()->year)->get();
 
         return view('admin.dashboard')->with([
             'todayOrders' => $todayOrders,
@@ -33,7 +40,7 @@ class AdminController extends Controller
      */
     public function login()
     {
-        if(!auth()->guard('admin')->check()) {
+        if (!auth()->guard('admin')->check()) {
             return view('login');
         }
         return redirect()->route('admin.index');
@@ -44,14 +51,14 @@ class AdminController extends Controller
      */
     public function auth(AuthAdminRequest $request)
     {
-        if($request->validated()) {
-            if(auth()->guard('admin')->attempt([
+        if ($request->validated()) {
+            if (auth()->guard('admin')->attempt([
                 'email' => $request->email,
                 'password' => $request->password,
             ])) {
                 $request->session()->regenerate();
                 return redirect()->route('admin.index');
-            }else {
+            } else {
                 return redirect()->route('admin.login')->with([
                     'error' => 'These credentials do not match any of our records.'
                 ]);
@@ -61,7 +68,7 @@ class AdminController extends Controller
 
     /**
      * Logout the admin
-    */
+     */
     public function logout()
     {
         auth()->guard('admin')->logout();

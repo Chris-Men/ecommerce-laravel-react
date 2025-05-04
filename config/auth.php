@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'guard' => 'admin-api',
+        'passwords' => 'users',
     ],
 
     /*
@@ -34,22 +34,22 @@ return [
     | Supported: "session"
     |
     */
-'guards' => [
-    'web' => [
-        'driver' => 'session',
-        'provider' => 'users',
-    ],
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
 
-    'api' => [
-        'driver' => 'jwt',
-        'provider' => 'users', // este queda para usuarios
-    ],
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users', // este queda para usuarios
+        ],
 
-    'admin-api' => [
-        'driver' => 'jwt',
-        'provider' => 'admins', // este para admins
+        'admin-api' => [
+            'driver' => 'jwt',
+            'provider' => 'admins', // este para admins
+        ],
     ],
-],
 
 
     /*
@@ -69,17 +69,17 @@ return [
     |
     */
 
-   'providers' => [
-    'users' => [
-        'driver' => 'eloquent',
-        'model' => App\Models\User::class,
-    ],
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
 
-    'admins' => [
-        'driver' => 'eloquent',
-        'model' => App\Models\Admin::class,
+         'admins' => [
+             'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+         ],
     ],
-],
 
 
     /*
