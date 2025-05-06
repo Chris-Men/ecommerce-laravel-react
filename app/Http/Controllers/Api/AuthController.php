@@ -26,10 +26,14 @@ class AuthController extends Controller
             return response()->json(['error' => 'No se pudo crear el token'], 500);
         }
 
+        // Obtener el usuario autenticado
+        $user = auth('admin-api')->user();
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
             'expires_in' => auth('admin-api')->factory()->getTTL() * 60,
+            'name' => $user->name
         ]);
     }
 
