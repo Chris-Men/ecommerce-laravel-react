@@ -49,7 +49,7 @@ class OrderController extends Controller
     }
 
     /***
-     * Pay orders
+     * Pago
      */
     public function payOrdersByStripe(Request $request)
     {
@@ -61,7 +61,7 @@ class OrderController extends Controller
                     'price_data' => [
                         'currency' => 'usd',
                         'product_data' => [
-                            'name' => 'Vue T-shirt Store'
+                            'name' => 'ecommerce'
                         ],
                         'unit_amount' => $this->calculateTotalToPay($request->cartItems)
                     ],
@@ -82,7 +82,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Calculate the total to pay
+     * Calcula el pago
      */
     public function calculateTotalToPay($items)
     {

@@ -1,5 +1,7 @@
 <?php
 
+
+//administrador "admin"
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\BrandController;
@@ -13,9 +15,33 @@ use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\AuthController;
 
+
+
+//user "usuario"
+use App\Http\Controllers\Api\AuthUserController;
+
+
+
 // Login sin protección
 Route::post('admin/login', [AuthController::class, 'login'])->name('admin.login');
 Route::get('admins', [AdminController::class, 'publicList']);
+
+
+//Login de usuario
+Route::prefix('user')->group(function () {
+    Route::post('register', [AuthUserController::class, 'register']);
+    Route::post('login', [AuthUserController::class, 'login']);
+
+    Route::middleware('auth:api')->group(function () {
+        Route::get('me', [AuthUserController::class, 'me']);
+        Route::post('logout', [AuthUserController::class, 'logout']);
+    });
+});
+
+
+
+
+
 
 // Rutas protegidas con middleware y prefijo 'admin'
 Route::middleware('auth:admin-api')->prefix('admin')->group(function () {
@@ -67,10 +93,18 @@ Route::middleware('auth:admin-api')->prefix('admin')->group(function () {
         Route::delete('{review}/delete', [ReviewController::class, 'delete'])->name('admin.reviews.delete');
     });
 
-    // Usuarios
+    // Usuarios desde admin
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('admin.users.index');
         Route::post('/', [UserController::class, 'store'])->name('admin.users.store');
         Route::delete('{user}/delete', [UserController::class, 'delete'])->name('admin.users.delete');
     });
+
+
+
+
+
+
+
+
 });
