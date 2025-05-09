@@ -19,6 +19,9 @@ use App\Http\Controllers\Api\AuthController;
 
 //user "usuario"
 use App\Http\Controllers\Api\AuthUserController;
+use App\Http\Controllers\Api\ProductController as UserProductController;
+use App\Http\Controllers\Api\CartController;
+
 
 
 
@@ -103,8 +106,20 @@ Route::middleware('auth:admin-api')->prefix('admin')->group(function () {
 
 
 
+});
+//rutas de usuario
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('products', [UserProductController::class, 'index']);
+    Route::get('products/{id}', [UserProductController::class, 'show']);
 
 
-
+    Route::middleware(['auth:api'])->prefix('cart')->group(function () {
+        Route::get('/', [CartController::class, 'index']);            // Ver carrito
+        Route::post('/', [CartController::class, 'store']);           // Agregar producto
+        Route::put('/{id}', [CartController::class, 'update']);       // Editar cantidad
+        Route::delete('/{id}', [CartController::class, 'destroy']);   // Eliminar un producto
+        Route::delete('/', [CartController::class, 'clear']);         // Vaciar carrito
+    });
 
 });
