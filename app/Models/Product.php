@@ -22,7 +22,6 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
-    // Relación corregida: uno a muchos
     public function color()
     {
         return $this->belongsTo(Color::class);
@@ -35,14 +34,8 @@ class Product extends Model
 
     public function reviews()
     {
-        return $this->hasMany(Review::class)
-            ->with('user')
-
-            ->latest();
+        return $this->hasMany(Review::class)->with('user')->latest();
     }
 
-    public function getRouteKeyName()
-    {
-        return "slug";
-    }
+
 }
