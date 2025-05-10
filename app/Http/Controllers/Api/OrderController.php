@@ -4,92 +4,107 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Order;
 use App\Models\Coupon;
+use App\Models\CartItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
-use ErrorException;
-use Stripe\Checkout\Session;
+use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
+use Stripe\Checkout\Session;
 
 class OrderController extends Controller
 {
-    /***
-     * Store user orders
-     */
     public function storeUserOrders(Request $request)
     {
-        foreach($request->cartItems as $item) {
+        try {
+            $user = $request->user();
+            $coupon = $request->input('coupon_id') ? Coupon::find($request->input('coupon_id')) : null;
+
+            $cartItems = CartItem::with('product')->where('user_id', $user->id)->get();
+
+            if ($cartItems->isEmpty()) {
+                return response()->json(['message' => 'El carrito está vacío'], 400);
+            }
+
+            $total = 0;
+            foreach ($cartItems as $item) {
+                $subtotal = $item->qty * $item->price;
+                $total += $subtotal;
+            }
+
+            $discount = 0;
+            if ($coupon && $coupon->checkIfValid()) {
+                $discount = $total * $coupon->discount / 100;
+            }
+
             $order = Order::create([
-                'qty' => $item['qty'],
-                'user_id' => $request->user()->id,
-                'coupon_id' => $item['coupon_id'],
-                'total' => $this->calculateEachOrderTotal($item['qty'],$item['price'],$item['coupon_id']),
+                'qty' => $cartItems->sum('qty'),
+                'user_id' => $user->id,
+                'coupon_id' => $coupon?->id,
+                'total' => $total - $discount,
             ]);
-            $order->products()->attach($item['product_id']);
+
+            foreach ($cartItems as $item) {
+                $order->products()->attach($item->product_id, ['quantity' => $item->qty]);
+            }
+
+            CartItem::where('user_id', $user->id)->delete();
+
+            return response()->json([
+                'message' => 'Orden creada',
+                'order_id' => $order->id,
+                'total' => $order->total
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al crear orden: ' . $e->getMessage());
+            return response()->json(['message' => 'Error interno'], 500);
         }
-        return response()->json([
-            'user' => UserResource::make($request->user())
-        ]);
     }
 
-    /**
-     * Calculate each order total
-     */
-    public function calculateEachOrderTotal($qty,$price,$coupon_id)
-    {
-        $discount = 0;
-        $total = $price * $qty;
-        $coupon = Coupon::find($coupon_id);
-
-        if($coupon && $coupon->checkIfValid()) {
-            $discount = $total * $coupon->discount / 100;
-        }
-
-        return $total - $discount;
-    }
-
-    /***
-     * Pago
-     */
     public function payOrdersByStripe(Request $request)
     {
-        Stripe::setApiKey("sk_test_51QJoS1090qk558Zfa1IcN6GY3mrlLxn4nsSKlvU2l8YRxicScmxMLkq8gG3aEUayjQDtaBawOF1k5jvHyqhmF9rp00JA4JizXY");
-
         try {
-            $checkout_session = Session::create([
-                'line_items' => [[
+            Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+
+            $cartItems = CartItem::with('product')->where('user_id', $request->user()->id)->get();
+
+            if ($cartItems->isEmpty()) {
+                return response()->json(['message' => 'El carrito está vacío.'], 400);
+            }
+
+            $lineItems = [];
+
+            foreach ($cartItems as $item) {
+                $productName = $item->product->name ?? 'Producto';
+                $unitPrice = $item->price ?? $item->product->price ?? 0;
+
+                if ($unitPrice <= 0) {
+                    throw new \Exception("Precio inválido para el producto {$productName}");
+                }
+
+                $lineItems[] = [
                     'price_data' => [
                         'currency' => 'usd',
-                        'product_data' => [
-                            'name' => 'ecommerce'
-                        ],
-                        'unit_amount' => $this->calculateTotalToPay($request->cartItems)
+                        'product_data' => ['name' => $productName],
+                        'unit_amount' => intval($unitPrice * 100),
                     ],
-                    'quantity' => 1
-                ]],
-                'mode' => 'payment',
-                'success_url' => $request->success_url
-            ]);
-            //return the link to the stripe checkout form
-            return response()->json([
-                'url' => $checkout_session->url
-            ]);
-        } catch (ErrorException $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
+                    'quantity' => $item->qty,
+                ];
+            }
 
-    /**
-     * Calcula el pago
-     */
-    public function calculateTotalToPay($items)
-    {
-        $total = 0;
-        foreach ($items as $item) {
-            $total += $this->calculateEachOrderTotal($item['qty'],$item['price'],$item['coupon_id']);
+            $session = Session::create([
+                'line_items' => $lineItems,
+                'mode' => 'payment',
+                'success_url' => $request->input('success_url', 'https://example.com/success'),
+                'cancel_url' => $request->input('cancel_url', 'https://example.com/cancel'),
+            ]);
+
+            return response()->json(['url' => $session->url]);
+        } catch (\Exception $e) {
+            Log::error('Error al procesar pago con Stripe: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error en el pago con Stripe',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return $total * 100;
     }
 }

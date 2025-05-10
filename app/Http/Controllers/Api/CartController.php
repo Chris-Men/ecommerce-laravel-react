@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 
 class CartController extends Controller
 {
-    // Ver todos los productos en el carrito del usuario
+    // Ver productos del carrito
     public function index(Request $request)
     {
         $items = CartItem::with('product')
@@ -22,19 +22,19 @@ class CartController extends Controller
                     'product_name' => $item->product->name,
                     'qty' => $item->qty,
                     'price' => $item->price,
-                    'total' => $item->qty * $item->price
+                    'total' => $item->qty * $item->price,
                 ];
             });
 
         return response()->json($items);
     }
 
-    // Agregar o actualizar un producto en el carrito
+    // Agregar o actualizar producto
     public function store(Request $request)
     {
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
-            'qty' => 'required|integer|min:1'
+            'qty' => 'required|integer|min:1',
         ]);
 
         $product = Product::findOrFail($validated['product_id']);
@@ -47,47 +47,51 @@ class CartController extends Controller
         return response()->json($item);
     }
 
-    // Actualizar la cantidad de un producto específico en el carrito
+    // Actualizar cantidad
     public function update(Request $request, $id)
     {
-        $cartItem = CartItem::findOrFail($id);
-
-        if ($cartItem->user_id !== auth()->id()) {
-            return response()->json(['message' => 'No autorizado'], 403);
-        }
-
-        $request->validate([
-            'qty' => 'required|integer|min:1'
+        $validated = $request->validate([
+            'qty' => 'required|integer|min:1',
         ]);
 
-        $cartItem->qty = $request->qty;
+        $cartItem = CartItem::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$cartItem) {
+            return response()->json(['message' => 'Producto no encontrado en el carrito.'], 404);
+        }
+
+        $cartItem->qty = $validated['qty'];
         $cartItem->save();
 
         return response()->json([
-            'message' => 'Cantidad actualizada correctamente',
-            'item' => $cartItem
+            'message' => 'Cantidad actualizada correctamente.',
+            'item' => $cartItem,
         ]);
     }
 
-    // Eliminar un producto del carrito
-    public function destroy($id)
+    // Eliminar producto del carrito
+    public function destroy(Request $request, $id)
     {
-        $cartItem = CartItem::findOrFail($id);
+        $cartItem = CartItem::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
 
-        if ($cartItem->user_id !== auth()->id()) {
-            return response()->json(['message' => 'No autorizado'], 403);
+        if (!$cartItem) {
+            return response()->json(['message' => 'Producto no encontrado en el carrito.'], 404);
         }
 
         $cartItem->delete();
 
-        return response()->json(['message' => 'Producto eliminado del carrito']);
+        return response()->json(['message' => 'Producto eliminado del carrito.']);
     }
 
-    // Vaciar todo el carrito del usuario
+    // Vaciar el carrito
     public function clear(Request $request)
     {
         CartItem::where('user_id', $request->user()->id)->delete();
 
-        return response()->json(['message' => 'Carrito vaciado']);
+        return response()->json(['message' => 'Carrito vaciado correctamente.']);
     }
 }

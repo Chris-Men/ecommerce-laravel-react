@@ -11,7 +11,6 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
-
     protected $fillable = [
         'name',
         'email',
@@ -47,6 +46,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Order::class)
                     ->with('products')
                     ->latest();
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(\App\Models\CartItem::class);
     }
 
     public function getImagePathAttribute()
