@@ -2,10 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Admin
+// =========================
+// IMPORTACIÓN DE CONTROLADORES
+// =========================
+
+// Auth para admins
+use App\Http\Controllers\Api\AuthController;
+
+// Admin (panel de gestión)
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+
 use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\OrderController;
@@ -13,42 +21,69 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Api\AuthController;
 
-// User
+// Auth para usuarios
 use App\Http\Controllers\Api\AuthUserController;
+
+// Funcionalidad para usuarios
 use App\Http\Controllers\Api\ProductController as UserProductController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController as UserOrderController;
 
-// ADMIN AUTH
+// =========================
+// RUTAS PÚBLICAS
+// =========================
+
+// Login para admins
 Route::post('admin/login', [AuthController::class, 'login']);
+
+// Lista pública de admins
 Route::get('admins', [AdminController::class, 'publicList']);
 
+
+// =========================
+// RUTAS PARA ADMINISTRADORES
+// Protegidas por el middleware auth:admin-api
+// =========================
 Route::middleware('auth:admin-api')->prefix('admin')->group(function () {
+
+    // Datos del admin autenticado
     Route::get('me', [AuthController::class, 'me']);
+
+    // Cierre de sesión
     Route::post('logout', [AuthController::class, 'logout']);
+
+    // Dashboard principal
     Route::get('dashboard', [AdminController::class, 'index']);
 
+
+    // Ruta de categorías con {id}
+    Route::apiResource('categories', CategoryController::class)
+        ->parameters(['categories' => 'id'])
+        ->names('admin.categories');
+
+    // Recursos RESTful administrables
     $resources = [
         'categories' => CategoryController::class,
-        'brands' => BrandController::class,
-        'colors' => ColorController::class,
-        'sizes' => SizeController::class,
-        'products' => ProductController::class,
-        'coupons' => CouponController::class,
-        'orders' => OrderController::class,
+        'brands'     => BrandController::class,
+        'colors'     => ColorController::class,
+        'sizes'      => SizeController::class,
+        'products'   => ProductController::class,
+        'coupons'    => CouponController::class,
+        'orders'     => OrderController::class,
     ];
 
     foreach ($resources as $key => $controller) {
         Route::apiResource($key, $controller)->names("admin.$key");
     }
 
+    // Funciones extra para pedidos
     Route::prefix('orders')->group(function () {
         Route::put('{order}/delivered', [OrderController::class, 'updateDeliveredAtDate']);
         Route::delete('{order}/delete', [OrderController::class, 'delete']);
     });
 
+    // Gestión de reseñas
     Route::prefix('reviews')->group(function () {
         Route::get('/', [ReviewController::class, 'index']);
         Route::post('/', [ReviewController::class, 'store']);
@@ -56,29 +91,47 @@ Route::middleware('auth:admin-api')->prefix('admin')->group(function () {
         Route::delete('{review}/delete', [ReviewController::class, 'delete']);
     });
 
+    // Gestión de usuarios
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/', [UserController::class, 'store']);
         Route::delete('{user}/delete', [UserController::class, 'delete']);
     });
+
+
+
 });
 
-// USER AUTH
+
+// =========================
+// AUTENTICACIÓN DE USUARIOS
+// =========================
+
 Route::prefix('user')->group(function () {
+
+    // Registro y login
     Route::post('register', [AuthUserController::class, 'register']);
     Route::post('login', [AuthUserController::class, 'login']);
 
+    // Rutas protegidas para usuarios autenticados
     Route::middleware('auth:api')->group(function () {
         Route::get('me', [AuthUserController::class, 'me']);
         Route::post('logout', [AuthUserController::class, 'logout']);
     });
 });
 
-// USER ZONE
+
+// =========================
+// FUNCIONALIDADES PARA USUARIOS AUTENTICADOS
+// =========================
+
 Route::middleware('auth:api')->group(function () {
+
+    // Productos
     Route::get('products', [UserProductController::class, 'index']);
     Route::get('products/{id}', [UserProductController::class, 'show']);
 
+    // Carrito de compras
     Route::prefix('cart')->group(function () {
         Route::get('/', [CartController::class, 'index']);
         Route::post('/', [CartController::class, 'store']);
@@ -87,6 +140,8 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/', [CartController::class, 'clear']);
     });
 
+    // Órdenes
     Route::post('/orders/store', [UserOrderController::class, 'storeUserOrders']);
     Route::post('/pay-orders-stripe', [UserOrderController::class, 'payOrdersByStripe']);
 });
+
