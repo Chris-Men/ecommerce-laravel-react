@@ -26,8 +26,18 @@ class CouponController extends Controller
         }
     }
 
+
+    public function index()
+{
+    $coupons = Coupon::where('valid_until', '>=', now())->get();
+
+    return response()->json([
+        'coupons' => $coupons
+    ]);
+}
+
     /**
-     * Create a new coupon
+     * a new coupon
      */
     public function store(Request $request)
     {

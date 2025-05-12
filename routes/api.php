@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\AuthUserController;
 use App\Http\Controllers\Api\ProductController as UserProductController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController as UserOrderController;
+use App\Http\Controllers\Api\CategoryController as UserCategoryController;
 
 // =========================
 // RUTAS PÚBLICAS
@@ -127,9 +128,16 @@ Route::prefix('user')->group(function () {
 
 Route::middleware('auth:api')->group(function () {
 
+    //cupones
+    Route::get('coupons', [\App\Http\Controllers\Api\CouponController::class, 'index']);
+
     // Productos
     Route::get('products', [UserProductController::class, 'index']);
     Route::get('products/{id}', [UserProductController::class, 'show']);
+
+    //categorias
+      Route::get('categories', [UserCategoryController::class, 'index']);
+    Route::get('categories/{id}', [UserCategoryController::class, 'show']);
 
     // Carrito de compras
     Route::prefix('cart')->group(function () {
@@ -143,5 +151,9 @@ Route::middleware('auth:api')->group(function () {
     // Órdenes
     Route::post('/orders/store', [UserOrderController::class, 'storeUserOrders']);
     Route::post('/pay-orders-stripe', [UserOrderController::class, 'payOrdersByStripe']);
+
+    //reseñas
+    Route::post('/reviews', [ReviewController::class, 'store']);
+
 });
 

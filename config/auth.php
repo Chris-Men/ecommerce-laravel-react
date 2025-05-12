@@ -11,12 +11,18 @@ return [
     | reset "broker" for your application. You may change these values
     | as required, but they're a perfect start for most applications.
     |
-    */
+*/
 
     'defaults' => [
         'guard' => 'admin-api',
         'passwords' => 'users',
     ],
+
+   /* 'defaults' => [
+    'guard' => 'api',
+    'passwords' => 'users',
+],
+*/
 
     /*
     |--------------------------------------------------------------------------

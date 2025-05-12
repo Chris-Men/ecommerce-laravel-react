@@ -9,85 +9,59 @@ use Illuminate\Http\Request;
 class ReviewController extends Controller
 {
     /**
-     * Store new review
+     * Mostrar las reseñas del usuario autenticado
+     */
+    public function index(Request $request)
+    {
+        // Solo muestra las reseñas del usuario autenticado
+        $reviews = Review::where('user_id', $request->user()->id)->latest()->get();
+
+        return response()->json([
+            'message' => 'Tus reseñas',
+            'data' => $reviews
+        ]);
+    }
+
+    /**
+     * Crear una nueva reseña (producto o general)
      */
     public function store(Request $request)
     {
-        $review = $this->checkIfUserAlreadyReviewedTheProduct($request->product_id,$request->user()->id);
+        // Validar la entrada
+        $validated = $request->validate([
+            'product_id' => 'nullable|exists:products,id',  // Puede ser null si es reseña general
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string',
+            'title' => 'nullable|string|max:255'
+        ]);
 
-        if($review) {
-            return response()->json(([
-                'error' => 'You have already reviewed this product.'
-            ]));
-        }else {
-            Review::create([
-                'product_id' => $request->product_id,
-                'user_id' => $request->user()->id,
-                'title' => $request->title,
-                'body' => $request->body,
-                'rating' => $request->rating
-            ]);
-            return response()->json(([
-                'message' => 'Su reseña ha sido agregada y se publicará pronto.'
-            ]));
+        // Verificar si es reseña de un producto
+        if ($request->filled('product_id')) {
+            // Verifica si ya existe una reseña del producto por este usuario
+            $existingReview = Review::where('product_id', $request->product_id)
+                ->where('user_id', $request->user()->id)
+                ->first();
+
+            if ($existingReview) {
+                return response()->json([
+                    'error' => 'Ya has reseñado este producto.'
+                ], 422);
+            }
         }
-    }
 
-    /**
-     * Update review
-     */
-    public function update(Request $request)
-    {
-        $review = $this->checkIfUserAlreadyReviewedTheProduct($request->product_id,$request->user()->id);
+        // Crear la reseña
+        $review = Review::create([
+            'user_id' => $request->user()->id,
+            'product_id' => $request->product_id,
+            'title' => $validated['title'],
+            'comment' => $validated['comment'],
+            'rating' => $validated['rating'],
+            'approved' => false // Puede ser true si quieres que se aprueben por defecto
+        ]);
 
-        if($review) {
-            $review->update([
-                'product_id' => $request->product_id,
-                'user_id' => $request->user()->id,
-                'title' => $request->title,
-                'body' => $request->body,
-                'rating' => $request->rating,
-                'approved' => 0
-            ]);
-            return response()->json(([
-                'message' => 'Su reseña ha sido actualizada y se publicará pronto.'
-            ]));
-        }else {
-            return response()->json(([
-                'error' => 'Algo salió mal, inténtalo de nuevo más tarde.'
-            ]));
-        }
-    }
-
-    /**
-     * Delete review
-     */
-    public function delete(Request $request)
-    {
-        $review = $this->checkIfUserAlreadyReviewedTheProduct($request->product_id,$request->user()->id);
-
-        if($review) {
-            $review->delete();
-            return response()->json(([
-                'message' => 'Tu reseña ha sido eliminada exitosamente.'
-            ]));
-        }else {
-            return response()->json(([
-                'error' => 'Algo salió mal, inténtalo de nuevo más tarde.'
-            ]));
-        }
-    }
-
-    /**
-     * Check if the user has already reviewed the product
-     */
-    public function checkIfUserAlreadyReviewedTheProduct($productId,$userId)
-    {
-        $review = Review::where([
-            'product_id' => $productId,
-            'user_id' => $userId
-        ])->first();
-
-        return $review;
+        return response()->json([
+            'message' => 'Reseña creada correctamente.',
+            'data' => $review
+        ], 201);
     }
 }

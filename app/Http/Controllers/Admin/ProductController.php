@@ -44,7 +44,8 @@ class ProductController extends Controller
                 'first_image' => $request->first_image,
                 'second_image' => $request->second_image,
                 'third_image' => $request->third_image,
-                'status' => $request->status,
+                'status' => $request->has('status') ? (bool)$request->status : true,
+
                 'qty' => $request->qty,
                 'category_id' => $validated['category_id'],
                 'brand_id' => $validated['brand_id'],
