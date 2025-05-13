@@ -8,9 +8,7 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    /**
-     * Display the list of reviews
-     */
+    // Obtener lista de todas las reseñas
     public function index()
     {
         $reviews = Review::latest()->get();
@@ -21,25 +19,18 @@ class ReviewController extends Controller
         ]);
     }
 
-    /**
-     * Store a new review
-     */
+    // Crear una nueva reseña
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
             'user_id' => 'required|exists:users,id',
+            'product_id' => 'required|exists:products,id',
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string',
+            'title' => 'nullable|string|max:255'
         ]);
 
-        $review = Review::create([
-            'product_id' => $validated['product_id'],
-            'user_id' => $validated['user_id'],
-            'rating' => $validated['rating'],
-            'comment' => $validated['comment'] ?? null,
-            'approved' => false, // Puedes cambiar esto si quieres que se aprueben por defecto
-        ]);
+        $review = Review::create($validated);
 
         return response()->json([
             'message' => 'Reseña creada correctamente',
@@ -47,25 +38,36 @@ class ReviewController extends Controller
         ], 201);
     }
 
-    /**
-     * Approve or disapprove a review
-     */
-    public function toggleApproveStatus(Review $review, $status)
+    // Mostrar una reseña específica
+    public function show(Review $review)
     {
-        $review->update([
-            'approved' => filter_var($status, FILTER_VALIDATE_BOOLEAN)
-        ]);
-
         return response()->json([
-            'message' => 'Estado de aprobación actualizado',
+            'message' => 'Detalle de la reseña',
             'data' => $review
         ]);
     }
 
-    /**
-     * Delete a review
-     */
-    public function delete(Review $review)
+    // Actualizar una reseña existente
+    public function update(Request $request, Review $review)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'product_id' => 'required|exists:products,id',
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string',
+            'title' => 'nullable|string|max:255'
+        ]);
+
+        $review->update($validated);
+
+        return response()->json([
+            'message' => 'Reseña actualizada correctamente',
+            'data' => $review
+        ]);
+    }
+
+    // Eliminar una reseña
+    public function destroy(Review $review)
     {
         $review->delete();
 

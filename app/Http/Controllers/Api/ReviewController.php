@@ -8,55 +8,45 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    /**
-     * Mostrar las reseñas del usuario autenticado
-     */
-    public function index(Request $request)
+    // Mostrar reseñas del usuario autenticado
+    public function index()
     {
-        // Solo muestra las reseñas del usuario autenticado
-        $reviews = Review::where('user_id', $request->user()->id)->latest()->get();
+        $reviews = Review::latest()->get();
 
         return response()->json([
-            'message' => 'Tus reseñas',
+            'message' => 'Lista de reseñas',
             'data' => $reviews
         ]);
     }
 
-    /**
-     * Crear una nueva reseña (producto o general)
-     */
+    // Crear una nueva reseña (requiere autenticación)
     public function store(Request $request)
     {
-        // Validar la entrada
         $validated = $request->validate([
-            'product_id' => 'nullable|exists:products,id',  // Puede ser null si es reseña general
+            'product_id' => 'required|exists:products,id',
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string',
             'title' => 'nullable|string|max:255'
         ]);
 
-        // Verificar si es reseña de un producto
-        if ($request->filled('product_id')) {
-            // Verifica si ya existe una reseña del producto por este usuario
-            $existingReview = Review::where('product_id', $request->product_id)
-                ->where('user_id', $request->user()->id)
-                ->first();
+        // Evitar reseña duplicada
+        $exists = Review::where('product_id', $validated['product_id'])
+            ->where('user_id', $request->user()->id)
+            ->exists();
 
-            if ($existingReview) {
-                return response()->json([
-                    'error' => 'Ya has reseñado este producto.'
-                ], 422);
-            }
+        if ($exists) {
+            return response()->json([
+                'error' => 'Ya has reseñado este producto.'
+            ], 422);
         }
 
         // Crear la reseña
         $review = Review::create([
             'user_id' => $request->user()->id,
-            'product_id' => $request->product_id,
-            'title' => $validated['title'],
-            'comment' => $validated['comment'],
+            'product_id' => $validated['product_id'],
             'rating' => $validated['rating'],
-            'approved' => false // Puede ser true si quieres que se aprueben por defecto
+            'comment' => $validated['comment'] ?? null,
+            'title' => $validated['title'] ?? null
         ]);
 
         return response()->json([

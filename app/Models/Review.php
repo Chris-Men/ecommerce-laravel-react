@@ -10,10 +10,12 @@ class Review extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'product_id', 'rating', 'comment'];
-
-    protected $casts = [
-        'approved' => 'boolean',
+    protected $fillable = [
+        'user_id',
+        'product_id',
+        'rating',
+        'comment',
+        'title',
     ];
 
     // Relaciones
@@ -27,7 +29,7 @@ class Review extends Model
         return $this->belongsTo(Product::class);
     }
 
-    // Personalización de la fecha de creación
+    // Fecha en formato "hace x tiempo"
     public function getCreatedAtAttribute($value)
     {
         return Carbon::parse($value)->diffForHumans();

@@ -13,12 +13,11 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
-
 use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\UserController;
 
@@ -30,6 +29,7 @@ use App\Http\Controllers\Api\ProductController as UserProductController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController as UserOrderController;
 use App\Http\Controllers\Api\CategoryController as UserCategoryController;
+use App\Http\Controllers\Api\ReviewController as UserReviewController;
 
 // =========================
 // RUTAS PÚBLICAS
@@ -84,13 +84,8 @@ Route::middleware('auth:admin-api')->prefix('admin')->group(function () {
         Route::delete('{order}/delete', [OrderController::class, 'delete']);
     });
 
-    // Gestión de reseñas
-    Route::prefix('reviews')->group(function () {
-        Route::get('/', [ReviewController::class, 'index']);
-        Route::post('/', [ReviewController::class, 'store']);
-        Route::patch('{review}/{status}/toggle', [ReviewController::class, 'toggleApproveStatus']);
-        Route::delete('{review}/delete', [ReviewController::class, 'delete']);
-    });
+    // Gestión de reseñas (con prefijo 'admin')
+    Route::apiResource('reviews', AdminReviewController::class)->names('admin.reviews');
 
     // Gestión de usuarios
     Route::prefix('users')->group(function () {
@@ -98,8 +93,6 @@ Route::middleware('auth:admin-api')->prefix('admin')->group(function () {
         Route::post('/', [UserController::class, 'store']);
         Route::delete('{user}/delete', [UserController::class, 'delete']);
     });
-
-
 
 });
 
@@ -136,7 +129,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('products/{id}', [UserProductController::class, 'show']);
 
     //categorias
-      Route::get('categories', [UserCategoryController::class, 'index']);
+    Route::get('categories', [UserCategoryController::class, 'index']);
     Route::get('categories/{id}', [UserCategoryController::class, 'show']);
 
     // Carrito de compras
@@ -153,7 +146,5 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/pay-orders-stripe', [UserOrderController::class, 'payOrdersByStripe']);
 
     //reseñas
-    Route::post('/reviews', [ReviewController::class, 'store']);
-
+    Route::apiResource('reviews', UserReviewController::class);
 });
-
