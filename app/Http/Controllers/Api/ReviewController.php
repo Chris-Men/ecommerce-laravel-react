@@ -19,7 +19,7 @@ class ReviewController extends Controller
         ]);
     }
 
-    // Crear una nueva reseña (requiere autenticación)
+    // Crear una nueva reseña
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -36,7 +36,7 @@ class ReviewController extends Controller
 
         if ($exists) {
             return response()->json([
-                'error' => 'Ya has reseñado este producto.'
+                'error' => 'Ya has dado tu reseña de  este producto.'
             ], 422);
         }
 

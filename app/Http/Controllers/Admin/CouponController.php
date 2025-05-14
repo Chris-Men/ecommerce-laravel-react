@@ -5,89 +5,58 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddCouponRequest;
 use App\Http\Requests\UpdateCouponRequest;
-use App\Models\Category;
 use App\Models\Coupon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CouponController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Listar todos los cupones
     public function index()
     {
-        //
-        return view('admin.coupons.index')->with([
-            'coupons' => Coupon::latest()->get()
+        $coupons = Coupon::latest()->get();
+        return response()->json([
+            'coupons' => $coupons
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-        return view('admin.coupons.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Guardar un nuevo cupón
     public function store(AddCouponRequest $request)
     {
-        //
-        if($request->validated()) {
-            Coupon::create($request->validated());
-            return redirect()->route('admin.coupons.index')->with([
-                'success' => 'El cupón se ha añadido correctamente.'
-            ]);
-        }
+        $coupon = Coupon::create($request->validated());
+
+        return response()->json([
+            'message' => 'Cupón creado correctamente.',
+            'data' => $coupon
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // Mostrar un cupón específico
     public function show(Coupon $coupon)
     {
-        //
-        abort(404);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Coupon $coupon)
-    {
-        //
-        return view('admin.coupons.edit')->with([
+        return response()->json([
             'coupon' => $coupon
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Actualizar un cupón existente
     public function update(UpdateCouponRequest $request, Coupon $coupon)
     {
-        //
-        if($request->validated()) {
-            $coupon->update($request->validated());
-            return redirect()->route('admin.coupons.index')->with([
-                'success' => 'El cupón se ha actualizado correctamente.'
-            ]);
-        }
+        $coupon->update($request->validated());
+
+        return response()->json([
+            'message' => 'Cupón actualizado correctamente.',
+            'data' => $coupon
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Eliminar un cupón
     public function destroy(Coupon $coupon)
     {
-        //
         $coupon->delete();
-        return redirect()->route('admin.coupons.index')->with([
-            'success' => 'El cupón se ha eliminado correctamente.'
+
+        return response()->json([
+            'message' => 'Cupón eliminado correctamente.'
         ]);
     }
 }

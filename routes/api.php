@@ -78,6 +78,11 @@ Route::middleware('auth:admin-api')->prefix('admin')->group(function () {
         Route::apiResource($key, $controller)->names("admin.$key");
     }
 
+Route::apiResource('brands', BrandController::class)
+    ->parameters(['brands' => 'id'])
+    ->names("admin.brands");
+
+
     // Funciones extra para pedidos
     Route::prefix('orders')->group(function () {
         Route::put('{order}/delivered', [OrderController::class, 'updateDeliveredAtDate']);
