@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Category;
@@ -10,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -40,19 +39,32 @@ class CategoryController extends Controller
         ]);
     }
 
+
+
+
+
+
     public function store(AddCategoryRequest $request)
-    {
-        $data = $request->validated();
-        $data['slug'] = Str::slug($request->name);
+{
+    $data = $request->validated();
+    $data['slug'] = Str::slug($data['name']);
 
-        $category = Category::create($data);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Categoría creada correctamente.',
-            'data' => $category
-        ], 201);
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('categories', 'public');
+        $data['image'] = $path;
     }
+
+
+
+    $category = Category::create($data);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Categoría creada correctamente.',
+        'data' => $category
+    ], 201);
+}
+
 
     public function update(UpdateCategoryRequest $request, $id)
     {
@@ -66,7 +78,17 @@ class CategoryController extends Controller
         }
 
         $data = $request->validated();
-        $data['slug'] = Str::slug($request->name);
+        $data['slug'] = Str::slug($data['name']);
+
+        // Reemplazar imagen si se envía una nueva
+        if ($request->hasFile('image')) {
+            // Eliminar imagen anterior si existe
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $data['image'] = $request->file('image')->store('categories', 'public');
+        }
+
         $category->update($data);
 
         return response()->json([
@@ -85,6 +107,11 @@ class CategoryController extends Controller
                 'success' => false,
                 'message' => 'Categoría no encontrada.'
             ], 404);
+        }
+
+        // Eliminar
+        if ($category->image && Storage::disk('public')->exists($category->image)) {
+            Storage::disk('public')->delete($category->image);
         }
 
         $category->delete();

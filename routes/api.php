@@ -58,10 +58,7 @@ Route::middleware('auth:admin-api')->prefix('admin')->group(function () {
     Route::get('dashboard', [AdminController::class, 'index']);
 
 
-    // Ruta de categorías con {id}
-    Route::apiResource('categories', CategoryController::class)
-        ->parameters(['categories' => 'id'])
-        ->names('admin.categories');
+
 
     // Recursos RESTful administrables
     $resources = [
@@ -83,6 +80,9 @@ Route::apiResource('brands', BrandController::class)
     ->names("admin.brands");
 
 
+
+
+
     // Funciones extra para pedidos
     Route::prefix('orders')->group(function () {
         Route::put('{order}/delivered', [OrderController::class, 'updateDeliveredAtDate']);
@@ -92,14 +92,18 @@ Route::apiResource('brands', BrandController::class)
     // Gestión de reseñas (con prefijo 'admin')
     Route::apiResource('reviews', AdminReviewController::class)->names('admin.reviews');
 
-    // Gestión de usuarios
-    Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index']);
-        Route::post('/', [UserController::class, 'store']);
-        Route::delete('{user}/delete', [UserController::class, 'delete']);
-    });
+    // Gestión completa de usuarios (admin)
+
+Route::apiResource('users', UserController::class)->names('admin.users');
+
 
 });
+
+
+
+
+
+
 
 
 // =========================
@@ -118,6 +122,12 @@ Route::prefix('user')->group(function () {
         Route::post('logout', [AuthUserController::class, 'logout']);
     });
 });
+
+
+
+
+
+
 
 
 // =========================

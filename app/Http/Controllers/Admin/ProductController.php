@@ -147,4 +147,14 @@ class ProductController extends Controller
 
         return $slug;
     }
+
+     // Mostrar un solo producto con detalles
+    public function show($id)
+    {
+        $product = Product::with(['category', 'brand'])
+            ->where('status', true)
+            ->findOrFail($id);
+
+        return response()->json($product);
+    }
 }

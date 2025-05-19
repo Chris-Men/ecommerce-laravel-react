@@ -22,7 +22,9 @@ class AddCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|max:255|unique:categories'
+            'name' => 'required|max:255|unique:categories',
+            'descripcion' => 'nullable|string',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048'
         ];
     }
 }
