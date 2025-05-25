@@ -21,7 +21,10 @@ class DatabaseSeeder extends Seeder
         // ]);
         $this->call([
             AdminSeeder::class,
-            UserSeeder::class
+            UserSeeder::class,
+             ColorSeeder::class,
+            SizeSeeder::class,
+             CategorySeeder::class
         ]);
     }
 }
