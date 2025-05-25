@@ -94,4 +94,89 @@ class CartController extends Controller
 
         return response()->json(['message' => 'Carrito vaciado correctamente.']);
     }
+
+public function applyCoupon(Request $request)
+{
+    $couponName = strtoupper($request->input('coupon'));
+
+    $coupon = \App\Models\Coupon::where('name', $couponName)->first();
+
+    if (!$coupon) {
+        return response()->json(['message' => 'Cupón no válido.'], 404);
+    }
+
+    try {
+        $validUntil = \Carbon\Carbon::parse($coupon->valid_until);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Fecha de expiración del cupón no válida.'], 500);
+    }
+
+    if ($validUntil->isPast()) {
+        return response()->json(['message' => 'El cupón ha expirado.'], 400);
+    }
+
+    if (!$coupon->checkIfValid()) {
+        return response()->json(['message' => 'El cupón no está disponible actualmente.'], 400);
+    }
+
+    return response()->json([
+        'message' => 'Cupón aplicado correctamente.',
+        'discount' => $coupon->discount,
+        'coupon' => [
+            'id' => $coupon->id,
+            'name' => $coupon->name,
+        ],
+    ]);
+}
+
+public function summary(Request $request)
+{
+    $user = $request->user();
+    $couponCode = $request->query('coupon');
+
+    $cartItems = CartItem::with('product')->where('user_id', $user->id)->get();
+
+    if ($cartItems->isEmpty()) {
+        return response()->json(['message' => 'El carrito está vacío.'], 400);
+    }
+
+    $subtotal = 0;
+    $items = [];
+
+    foreach ($cartItems as $item) {
+        $price = $item->price ?? $item->product->price ?? 0;
+        $lineTotal = $price * $item->qty;
+        $subtotal += $lineTotal;
+
+        $items[] = [
+            'id' => $item->id,
+            'product_name' => $item->product->name ?? 'Producto',
+            'qty' => $item->qty,
+            'unit_price' => round($price, 2),
+            'line_total' => round($lineTotal, 2),
+        ];
+    }
+
+    $discount = 0;
+    $coupon = null;
+
+    if ($couponCode) {
+        $coupon = \App\Models\Coupon::where('name', strtoupper($couponCode))->first();
+
+        if ($coupon && $coupon->checkIfValid()) {
+            $discount = round($subtotal * ($coupon->discount / 100), 2);
+        }
+    }
+
+    $total = round($subtotal - $discount, 2);
+
+    return response()->json([
+        'items' => $items,
+        'subtotal' => round($subtotal, 2),
+        'discount' => $discount,
+        'total' => $total,
+        'coupon_applied' => $coupon?->name
+    ]);
+}
+
 }

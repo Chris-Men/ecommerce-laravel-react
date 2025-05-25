@@ -7,17 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    //
-    protected $fillable = ["qty","total","delivered_at","user_id",
-        "coupon_id"];
+    protected $fillable = [
+        'qty',
+        'subtotal',     // 🟢 nuevo
+        'discount',     // 🟢 nuevo
+        'total',
+        'delivered_at',
+        'user_id',
+        'coupon_id'
+    ];
 
-        public function products()
-        {
-            return $this->belongsToMany(Product::class)
-                        ->withPivot('quantity')
-                        ->withTimestamps();
-        }
-
+    public function products()
+    {
+        return $this->belongsToMany(Product::class)
+                    ->withPivot('quantity')
+                    ->withTimestamps();
+    }
 
     public function user()
     {
@@ -36,10 +41,7 @@ class Order extends Model
 
     public function getDeliveredAtAttribute($value)
     {
-        if($value) {
-            return Carbon::parse($value)->diffForHumans();
-        }else {
-            return null;
-        }
+        return $value ? Carbon::parse($value)->diffForHumans() : null;
     }
 }
+

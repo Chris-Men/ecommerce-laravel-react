@@ -154,6 +154,10 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/{id}', [CartController::class, 'update']);
         Route::delete('/{id}', [CartController::class, 'destroy']);
         Route::delete('/', [CartController::class, 'clear']);
+        Route::post('/apply-coupon', [CartController::class, 'applyCoupon']);
+        Route::get('/summary', [CartController::class, 'summary']);
+
+
     });
 
     // Órdenes

@@ -42,8 +42,6 @@ class CategoryController extends Controller
 
 
 
-
-
     public function store(AddCategoryRequest $request)
 {
     $data = $request->validated();
