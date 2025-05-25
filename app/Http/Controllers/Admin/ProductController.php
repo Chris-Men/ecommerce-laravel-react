@@ -26,6 +26,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
+            // Validación completa y coherente con mimes
             $validated = $request->validate([
                 'name' => 'required|string|max:255|unique:products,name',
                 'price' => 'required|numeric',
@@ -33,27 +34,51 @@ class ProductController extends Controller
                 'brand_id' => 'required|exists:brands,id',
                 'size_id' => 'required|exists:sizes,id',
                 'color_id' => 'required|exists:colors,id',
+
+                'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'first_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'second_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'third_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
 
-            $product = Product::create([
+            $data = [
                 'name' => $validated['name'],
                 'slug' => $this->generateUniqueSlug($validated['name']),
                 'price' => $validated['price'],
-                'description' => $request->description,
-                'thumbnail' => $request->thumbnail,
-                'first_image' => $request->first_image,
-                'second_image' => $request->second_image,
-                'third_image' => $request->third_image,
+                'description' => $request->description ?? null,
                 'status' => $request->has('status') ? (bool)$request->status : true,
-
-                'qty' => $request->qty,
+                'qty' => $request->qty ?? 0,
                 'category_id' => $validated['category_id'],
                 'brand_id' => $validated['brand_id'],
                 'size_id' => $validated['size_id'],
                 'color_id' => $validated['color_id'],
-            ]);
+            ];
+
+            // Guardar imágenes y asignar rutas
+            if ($request->hasFile('thumbnail')) {
+                $data['thumbnail'] = $request->file('thumbnail')->store('products', 'public');
+                Log::info('Thumbnail guardado en: ' . $data['thumbnail']);
+            }
+
+            if ($request->hasFile('first_image')) {
+                $data['first_image'] = $request->file('first_image')->store('products', 'public');
+                Log::info('First image guardada en: ' . $data['first_image']);
+            }
+
+            if ($request->hasFile('second_image')) {
+                $data['second_image'] = $request->file('second_image')->store('products', 'public');
+                Log::info('Second image guardada en: ' . $data['second_image']);
+            }
+
+            if ($request->hasFile('third_image')) {
+                $data['third_image'] = $request->file('third_image')->store('products', 'public');
+                Log::info('Third image guardada en: ' . $data['third_image']);
+            }
+
+            $product = Product::create($data);
 
             return response()->json(new ProductResource($product), 201);
+
         } catch (\Throwable $e) {
             Log::error('Error en store(): ' . $e->getMessage());
 
@@ -77,26 +102,48 @@ class ProductController extends Controller
                 'brand_id' => 'required|exists:brands,id',
                 'size_id' => 'required|exists:sizes,id',
                 'color_id' => 'required|exists:colors,id',
+                'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'first_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'second_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'third_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
 
-            $product->update([
-                'name' => $validated['name'],
-                'slug' => $this->generateUniqueSlug($validated['name'], $product->id),
-                'price' => $validated['price'],
-                'description' => $request->description,
-                'thumbnail' => $request->thumbnail,
-                'first_image' => $request->first_image,
-                'second_image' => $request->second_image,
-                'third_image' => $request->third_image,
-                'status' => $request->status ?? $product->status,
-                'qty' => $request->qty ?? $product->qty,
-                'category_id' => $validated['category_id'],
-                'brand_id' => $validated['brand_id'],
-                'size_id' => $validated['size_id'],
-                'color_id' => $validated['color_id'],
-            ]);
+            if ($request->hasFile('thumbnail')) {
+                $product->thumbnail = $request->file('thumbnail')->store('products', 'public');
+                Log::info('Thumbnail actualizado en: ' . $product->thumbnail);
+            }
+
+            if ($request->hasFile('first_image')) {
+                $product->first_image = $request->file('first_image')->store('products', 'public');
+                Log::info('First image actualizada en: ' . $product->first_image);
+            }
+
+            if ($request->hasFile('second_image')) {
+                $product->second_image = $request->file('second_image')->store('products', 'public');
+                Log::info('Second image actualizada en: ' . $product->second_image);
+            }
+
+            if ($request->hasFile('third_image')) {
+                $product->third_image = $request->file('third_image')->store('products', 'public');
+                Log::info('Third image actualizada en: ' . $product->third_image);
+            }
+
+            // Actualizar campos
+            $product->name = $validated['name'];
+            $product->slug = $this->generateUniqueSlug($validated['name'], $product->id);
+            $product->price = $validated['price'];
+            $product->description = $request->description ?? $product->description;
+            $product->status = $request->has('status') ? (bool)$request->status : $product->status;
+            $product->qty = $request->qty ?? $product->qty;
+            $product->category_id = $validated['category_id'];
+            $product->brand_id = $validated['brand_id'];
+            $product->size_id = $validated['size_id'];
+            $product->color_id = $validated['color_id'];
+
+            $product->save();
 
             return response()->json(new ProductResource($product), 200);
+
         } catch (\Throwable $e) {
             Log::error('Error en update(): ' . $e->getMessage());
 
@@ -148,10 +195,12 @@ class ProductController extends Controller
         return $slug;
     }
 
-     // Mostrar un solo producto con detalles
+    /**
+     * Mostrar un solo producto con detalles
+     */
     public function show($id)
     {
-        $product = Product::with(['category', 'brand'])
+        $product = Product::with(['category', 'brand', 'size', 'color'])
             ->where('status', true)
             ->findOrFail($id);
 
