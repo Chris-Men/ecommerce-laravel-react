@@ -143,9 +143,14 @@ Route::middleware('auth:api')->group(function () {
     Route::get('products', [UserProductController::class, 'index']);
     Route::get('products/{id}', [UserProductController::class, 'show']);
 
+
+    Route::prefix('user')->middleware('auth:api')->group(function () {
     //categorias
     Route::get('categories', [UserCategoryController::class, 'index']);
     Route::get('categories/{id}', [UserCategoryController::class, 'show']);
+    // Productos por categoría (usando slug)
+    Route::get('categories/{slug}/products', [UserCategoryController::class, 'productsByCategory']);
+    });
 
     // Carrito de compras
     Route::prefix('cart')->group(function () {
