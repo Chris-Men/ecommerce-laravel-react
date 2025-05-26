@@ -27,7 +27,7 @@ class ProductSeeder extends Seeder
 
             ['name' => 'Barbie', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'barbie.jpg'],
             ['name' => 'Hot Wheels', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'hot wheels.jpg'],
-            ['name' => 'Fisher-Price Laugh & Learn', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'fisher price laugh learn.jpg'],
+            ['name' => 'Fisher-Price Laugh & Learn', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'fisher price 12.jpg'],
             ['name' => 'Uno (juego de cartas)', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'uno juego de cartas.jpg'],
 
             ['name' => 'Monopoly', 'brand' => 'Hasbro', 'category' => 'Juguetes', 'imagen' => 'monopoly.jpg'],
@@ -41,24 +41,24 @@ class ProductSeeder extends Seeder
             ['name' => 'Silla vibradora', 'brand' => 'Fisher-Price', 'category' => 'Juguetes', 'imagen' => 'silla vibradora.jpg'],
 
             // Tecnología
-            ['name' => 'Huawei Matepad 11', 'brand' => 'Huawei', 'category' => 'Tecnología', 'imagen' => 'huawei-matepad-11.jpg'],
-            ['name' => 'Huawei Matebook D15', 'brand' => 'Huawei', 'category' => 'Tecnología', 'imagen' => 'huawei-matebook-d15.jpg'],
-            ['name' => 'Huawei Watch GT5', 'brand' => 'Huawei', 'category' => 'Tecnología', 'imagen' => 'huawei-watch-gt5.jpg'],
-            ['name' => 'Huawei Mate 50 Pro', 'brand' => 'Huawei', 'category' => 'Tecnología', 'imagen' => 'huawei-mate-50-pro.jpg'],
+            ['name' => 'Huawei Matepad 11', 'brand' => 'Huawei', 'category' => 'Tecnología', 'imagen' => 'huawei matepad 11.jpg'],
+            ['name' => 'Huawei Matebook D15', 'brand' => 'Huawei', 'category' => 'Tecnología', 'imagen' => 'huawei matebook d15.jpg'],
+            ['name' => 'Huawei Watch GT5', 'brand' => 'Huawei', 'category' => 'Tecnología', 'imagen' => 'huawei watch gt5.jpg'],
+            ['name' => 'Huawei Mate 50 Pro', 'brand' => 'Huawei', 'category' => 'Tecnología', 'imagen' => 'huawei mate 50 pro.jpg'],
 
-            ['name' => 'Sony WF 1000x', 'brand' => 'Sony', 'category' => 'Tecnología', 'imagen' => 'sony-wf-1000x.jpg'],
-            ['name' => 'PlayStation 5', 'brand' => 'Sony', 'category' => 'Tecnología', 'imagen' => 'play-station-5.jpg'],
-            ['name' => 'Sony WH-1000XM4', 'brand' => 'Sony', 'category' => 'Tecnología', 'imagen' => 'sony-wh-1000xm4.jpg'],
-            ['name' => 'Sony Xperia 1', 'brand' => 'Sony', 'category' => 'Tecnología', 'imagen' => 'sony-xperia-1.jpg'],
+            ['name' => 'Sony WF 1000x', 'brand' => 'Sony', 'category' => 'Tecnología', 'imagen' => 'sony wf 1000x.jpg'],
+            ['name' => 'PlayStation 5', 'brand' => 'Sony', 'category' => 'Tecnología', 'imagen' => 'play station 5.jpg'],
+            ['name' => 'Sony WH-1000XM4', 'brand' => 'Sony', 'category' => 'Tecnología', 'imagen' => 'sony wh 1000xm4.jpg'],
+            ['name' => 'Sony Xperia 1', 'brand' => 'Sony', 'category' => 'Tecnología', 'imagen' => 'sony xperia 1.jpg'],
 
-            ['name' => 'Samsung Galaxy S24 Ultra', 'brand' => 'Samsung', 'category' => 'Tecnología', 'imagen' => 'samsung-galaxy-s24-ultra.jpg'],
-            ['name' => 'Laptop Apple Macbook Pro', 'brand' => 'Apple', 'category' => 'Tecnología', 'imagen' => 'apple-macbook-pro.jpg'],
-            ['name' => 'AirPods 3ra generación', 'brand' => 'Apple', 'category' => 'Tecnología', 'imagen' => 'airpods-3ra-generacion.jpg'],
+            ['name' => 'Samsung Galaxy S24 Ultra', 'brand' => 'Samsung', 'category' => 'Tecnología', 'imagen' => 'samsung galaxy s24 ultra.jpg'],
+            ['name' => 'Laptop Apple Macbook Pro', 'brand' => 'Apple', 'category' => 'Tecnología', 'imagen' => 'apple macbook pro.jpg'],
+            ['name' => 'AirPods 3ra generación', 'brand' => 'Apple', 'category' => 'Tecnología', 'imagen' => 'airpods 3ra generacion.jpg'],
             ['name' => 'Apple TV', 'brand' => 'Apple', 'category' => 'Tecnología', 'imagen' => 'apple-tv.jpg'],
 
-            ['name' => 'iPhone 16', 'brand' => 'Apple', 'category' => 'Tecnología', 'imagen' => 'iphone-16.jpg'],
-            ['name' => 'Samsung Galaxy Tab S8', 'brand' => 'Samsung', 'category' => 'Tecnología', 'imagen' => 'samsung-galaxy-tab-s8.jpg'],
-            ['name' => 'Samsung Galaxy Buds', 'brand' => 'Samsung', 'category' => 'Tecnología', 'imagen' => 'samsung-galaxy-buds.jpg'],
+            ['name' => 'iPhone 16', 'brand' => 'Apple', 'category' => 'Tecnología', 'imagen' => 'iphone 16.jpg'],
+            ['name' => 'Samsung Galaxy Tab S8', 'brand' => 'Samsung', 'category' => 'Tecnología', 'imagen' => 'samsung galaxy tab s8.jpg'],
+            ['name' => 'Samsung Galaxy Buds', 'brand' => 'Samsung', 'category' => 'Tecnología', 'imagen' => 'samsung galaxy buds.jpg'],
 
 
             // Oficina
@@ -101,6 +101,55 @@ class ProductSeeder extends Seeder
             ['name' => 'camara domo hdcvi dahua', 'brand' => 'Dahua', 'category' => 'Seguridad', 'imagen' => 'camara domo hdcvi dahua.jpg'],
             ['name' => 'router Dahua ax1500', 'brand' => 'Dahua', 'category' => 'Seguridad', 'imagen' => 'router Dahua ax1500.jpg'],
             ['name' => 'camara wifi rotatoria dahua', 'brand' => 'Dahua', 'category' => 'Seguridad', 'imagen' => 'camara wifi rotatoria dahua.jpg'],
+
+//deporte
+             // Productos de Reebok
+            ['name' => 'reebok freestyle hi', 'brand' => 'Reebok', 'category' => 'Deporte', 'imagen' => 'reebok freestyle hi.jpg'],
+            ['name' => 'reebok princess w', 'brand' => 'Reebok', 'category' => 'Deporte', 'imagen' => 'reebok princess w.jpg'],
+            ['name' => 'reebok club c', 'brand' => 'Reebok', 'category' => 'Deporte', 'imagen' => 'reebok club c.jpg'],
+            ['name' => 'reebok classic harman', 'brand' => 'Reebok', 'category' => 'Deporte', 'imagen' => 'reebok classic harman.jpg'],
+
+            // Productos de Puma
+            ['name' => 'calcetines deportivos puma repreve', 'brand' => 'Puma', 'category' => 'Deporte', 'imagen' => 'calcetines deportivos puma repreve.jpg'],
+            ['name' => 'bolso de mano puma phase', 'brand' => 'Puma', 'category' => 'Deporte', 'imagen' => 'bolso de mano puma phase.jpg'],
+            ['name' => 'pasamontañas puma', 'brand' => 'Puma', 'category' => 'Deporte', 'imagen' => 'pasamontanas puma.jpg'],
+            ['name' => 'puma motosport helmet bag', 'brand' => 'Puma', 'category' => 'Deporte', 'imagen' => 'puma motosport helmet bag.jpg'],
+
+            // Productos de Adidas
+            ['name' => 'adidas superstar', 'brand' => 'Adidas', 'category' => 'Deporte', 'imagen' => 'adidas superstar.jpg'],
+            ['name' => 'adidas ultraboost 5', 'brand' => 'Adidas', 'category' => 'Deporte', 'imagen' => 'adidas ultraboost 5.jpg'],
+            ['name' => 'adidas samba It', 'brand' => 'Adidas', 'category' => 'Deporte', 'imagen' => 'adidas samba it.jpg'],
+            ['name' => 'adidas run 60s', 'brand' => 'Adidas', 'category' => 'Deporte', 'imagen' => 'adidas run 60s.jpg'],
+
+            // Productos de Nike
+            ['name' => 'nike jam para mujer', 'brand' => 'Nike', 'category' => 'Deporte', 'imagen' => 'nike jam para mujer.jpg'],
+            ['name' => 'nike air max muse', 'brand' => 'Nike', 'category' => 'Deporte', 'imagen' => 'nike air max muse.jpg'],
+            ['name' => 'nike air max 270', 'brand' => 'Nike', 'category' => 'Deporte', 'imagen' => 'nike air max 270.jpg'],
+            ['name' => 'nike blazer mid 77 vintage', 'brand' => 'Nike', 'category' => 'Deporte', 'imagen' => 'nike blazer mid 77 vintage.jpg'],
+
+            //belleza
+            // Productos de Dove
+            ['name' => 'barra desodorante original', 'brand' => 'Dove', 'category' => 'Belleza', 'imagen' => 'barra desodorante original.jpg'],
+            ['name' => 'shampoo bond intense repair', 'brand' => 'Dove', 'category' => 'Belleza', 'imagen' => 'shampoo bond intense repair.jpg'],
+            ['name' => 'antitranspirante en spray dove', 'brand' => 'Dove', 'category' => 'Belleza', 'imagen' => 'antitranspirante en spray dove.jpg'],
+            ['name' => 'jabon original dove', 'brand' => 'Dove', 'category' => 'Belleza', 'imagen' => 'jabon original dove.jpg'],
+            ['name' => 'crema revitalizante para hombre', 'brand' => 'Dove', 'category' => 'Belleza', 'imagen' => 'crema revitalizante para hombre.jpg'],
+            ['name' => 'crema facial tono natural', 'brand' => 'Dove', 'category' => 'Belleza', 'imagen' => 'crema facial tono natural.jpg'],
+            ['name' => 'crema corporal nutritiva', 'brand' => 'Dove', 'category' => 'Belleza', 'imagen' => 'crema corporal nutritiva.jpg'],
+            ['name' => 'locion corporal mantequilla de cacao', 'brand' => 'Dove', 'category' => 'Belleza', 'imagen' => 'locion corporal mantequilla de cacao.jpg'],
+
+            // Productos de Maybelline
+            ['name' => 'base de maquillaje superstay', 'brand' => 'Maybelline', 'category' => 'Belleza', 'imagen' => 'base de maquillaje superstay.jpg'],
+            ['name' => 'corrector anti ojeras', 'brand' => 'Maybelline', 'category' => 'Belleza', 'imagen' => 'corrector anti ojeras.jpg'],
+            ['name' => 'labial liquido vinil', 'brand' => 'Maybelline', 'category' => 'Belleza', 'imagen' => 'labial liquido vinil.jpg'],
+            ['name' => 'mascara para pestañas lavable', 'brand' => 'Maybelline', 'category' => 'Belleza', 'imagen' => 'mascara para pestanas lavable.jpg'],
+
+            // Productos de L'Oreal
+            ['name' => 'protector solar defender serum', 'brand' => 'L\'Oreal', 'category' => 'Belleza', 'imagen' => 'protector solar defender serum.jpg'],
+            ['name' => 'shampoo absolute repair', 'brand' => 'L\'Oreal', 'category' => 'Belleza', 'imagen' => 'shampoo absolute repair.jpg'],
+            ['name' => 'cera true match tinted', 'brand' => 'L\'Oreal', 'category' => 'Belleza', 'imagen' => 'cera true match tinted.jpg'],
+            ['name' => 'paris infallible fresh wear liquid', 'brand' => 'L\'Oreal', 'category' => 'Belleza', 'imagen' => 'paris infallible fresh wear liquid.jpg'],
+
         ];
 
         foreach ($productos as $item) {
