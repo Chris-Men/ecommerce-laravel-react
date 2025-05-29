@@ -20,7 +20,7 @@ class ProductSeeder extends Seeder
 
         $productos = [
             // Juguetes
-            ['name' => 'Lego City', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'lego city.jpg'],
+            ['name' => 'Lego City', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'products/lego city.jpg'],
             ['name' => 'Lego Star Wars', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'lego star wars.jpg'],
             ['name' => 'Lego Technic', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'lego technic.jpg'],
             ['name' => 'Lego Friends', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'lego friends.jpg'],

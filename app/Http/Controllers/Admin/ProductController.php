@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Product;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
+use App\Http\Requests\AddProductRequest;
 
 class ProductController extends Controller
 {
@@ -23,64 +24,42 @@ class ProductController extends Controller
     /**
      * Crear un nuevo producto
      */
-    public function store(Request $request)
+    public function store(AddProductRequest $request)
     {
         try {
-            // Validación completa y coherente con mimes
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:products,name',
-                'price' => 'required|numeric',
-                'category_id' => 'required|exists:categories,id',
-                'brand_id' => 'required|exists:brands,id',
-                'size_id' => 'required|exists:sizes,id',
-                'color_id' => 'required|exists:colors,id',
-
-                'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'first_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'second_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'third_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
+            $validated = $request->validated();
 
             $data = [
                 'name' => $validated['name'],
                 'slug' => $this->generateUniqueSlug($validated['name']),
                 'price' => $validated['price'],
-                'description' => $request->description ?? null,
+                'description' => $validated['description'], // Corregido: usar 'description' consistentemente
                 'status' => $request->has('status') ? (bool)$request->status : true,
-                'qty' => $request->qty ?? 0,
+                'qty' => $validated['qty'],
                 'category_id' => $validated['category_id'],
                 'brand_id' => $validated['brand_id'],
                 'size_id' => $validated['size_id'],
                 'color_id' => $validated['color_id'],
             ];
 
-            // Guardar imágenes y asignar rutas
-            if ($request->hasFile('thumbnail')) {
-                $data['thumbnail'] = $request->file('thumbnail')->store('products', 'public');
-                Log::info('Thumbnail guardado en: ' . $data['thumbnail']);
-            }
-
-            if ($request->hasFile('first_image')) {
-                $data['first_image'] = $request->file('first_image')->store('products', 'public');
-                Log::info('First image guardada en: ' . $data['first_image']);
-            }
-
-            if ($request->hasFile('second_image')) {
-                $data['second_image'] = $request->file('second_image')->store('products', 'public');
-                Log::info('Second image guardada en: ' . $data['second_image']);
-            }
-
-            if ($request->hasFile('third_image')) {
-                $data['third_image'] = $request->file('third_image')->store('products', 'public');
-                Log::info('Third image guardada en: ' . $data['third_image']);
+            // Guardar imágenes
+            foreach (['thumbnail', 'first_image', 'second_image', 'third_image'] as $imageField) {
+                if ($request->hasFile($imageField)) {
+                    $data[$imageField] = $request->file($imageField)->store('products', 'public');
+                    Log::info("$imageField guardado en: " . $data[$imageField]);
+                }
             }
 
             $product = Product::create($data);
 
-            return response()->json(new ProductResource($product), 201);
+            return response()->json([
+                'message' => 'Producto creado exitosamente',
+                'data' => new ProductResource($product)
+            ], 201);
 
         } catch (\Throwable $e) {
             Log::error('Error en store(): ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
 
             return response()->json([
                 'message' => 'Error al crear producto',
@@ -92,49 +71,31 @@ class ProductController extends Controller
     /**
      * Actualizar un producto existente
      */
-    public function update(Request $request, Product $product)
+    public function update(AddProductRequest $request, Product $product)
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:products,name,' . $product->id,
-                'price' => 'required|numeric',
-                'category_id' => 'required|exists:categories,id',
-                'brand_id' => 'required|exists:brands,id',
-                'size_id' => 'required|exists:sizes,id',
-                'color_id' => 'required|exists:colors,id',
-                'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'first_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'second_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'third_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
+            $validated = $request->validated();
 
-            if ($request->hasFile('thumbnail')) {
-                $product->thumbnail = $request->file('thumbnail')->store('products', 'public');
-                Log::info('Thumbnail actualizado en: ' . $product->thumbnail);
-            }
-
-            if ($request->hasFile('first_image')) {
-                $product->first_image = $request->file('first_image')->store('products', 'public');
-                Log::info('First image actualizada en: ' . $product->first_image);
-            }
-
-            if ($request->hasFile('second_image')) {
-                $product->second_image = $request->file('second_image')->store('products', 'public');
-                Log::info('Second image actualizada en: ' . $product->second_image);
-            }
-
-            if ($request->hasFile('third_image')) {
-                $product->third_image = $request->file('third_image')->store('products', 'public');
-                Log::info('Third image actualizada en: ' . $product->third_image);
+            // Reemplazar imágenes si fueron enviadas
+            foreach (['thumbnail', 'first_image', 'second_image', 'third_image'] as $imageField) {
+                if ($request->hasFile($imageField)) {
+                    // Eliminar imagen antigua si existe
+                    if ($product->$imageField) {
+                        Storage::disk('public')->delete($product->$imageField);
+                    }
+                    // Guardar nueva imagen
+                    $product->$imageField = $request->file($imageField)->store('products', 'public');
+                    Log::info("$imageField actualizado en: " . $product->$imageField);
+                }
             }
 
             // Actualizar campos
             $product->name = $validated['name'];
             $product->slug = $this->generateUniqueSlug($validated['name'], $product->id);
             $product->price = $validated['price'];
-            $product->description = $request->description ?? $product->description;
+            $product->description = $validated['description']; // Corregido: usar 'description'
             $product->status = $request->has('status') ? (bool)$request->status : $product->status;
-            $product->qty = $request->qty ?? $product->qty;
+            $product->qty = $validated['qty'];
             $product->category_id = $validated['category_id'];
             $product->brand_id = $validated['brand_id'];
             $product->size_id = $validated['size_id'];
@@ -142,10 +103,14 @@ class ProductController extends Controller
 
             $product->save();
 
-            return response()->json(new ProductResource($product), 200);
+            return response()->json([
+                'message' => 'Producto actualizado exitosamente',
+                'data' => new ProductResource($product)
+            ], 200);
 
         } catch (\Throwable $e) {
             Log::error('Error en update(): ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
 
             return response()->json([
                 'message' => 'Error al actualizar producto',
@@ -160,11 +125,19 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         try {
+            // Eliminar imágenes asociadas
+            foreach (['thumbnail', 'first_image', 'second_image', 'third_image'] as $imageField) {
+                if ($product->$imageField) {
+                    Storage::disk('public')->delete($product->$imageField);
+                }
+            }
+
             $product->delete();
 
             return response()->json([
                 'message' => 'Producto eliminado correctamente.'
             ], 200);
+
         } catch (\Throwable $e) {
             Log::error('Error en destroy(): ' . $e->getMessage());
 
@@ -173,6 +146,18 @@ class ProductController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Mostrar un solo producto con detalles
+     */
+    public function show($id)
+    {
+        $product = Product::with(['category', 'brand', 'size', 'color'])
+            ->where('status', true)
+            ->findOrFail($id);
+
+        return response()->json(new ProductResource($product));
     }
 
     /**
@@ -193,17 +178,5 @@ class ProductController extends Controller
         }
 
         return $slug;
-    }
-
-    /**
-     * Mostrar un solo producto con detalles
-     */
-    public function show($id)
-    {
-        $product = Product::with(['category', 'brand', 'size', 'color'])
-            ->where('status', true)
-            ->findOrFail($id);
-
-        return response()->json($product);
     }
 }
