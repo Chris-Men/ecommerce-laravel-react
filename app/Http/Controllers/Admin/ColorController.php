@@ -11,13 +11,13 @@ use Illuminate\Support\Str;
 class ColorController extends Controller
 {
     public function index()
-    {
-        $colors = Color::latest()->get();
+{
+    $colors = Color::latest()->get();
+    return response()->json([
+        'data' => $colors
+    ]);
+}
 
-        return response()->json([
-            'colors' => $colors
-        ]);
-    }
 
     public function store(AddColorRequest $request)
     {

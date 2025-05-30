@@ -13,13 +13,13 @@ class SizeController extends Controller
 {
     // Listar todas las tallas
     public function index()
-    {
-        $sizes = Size::latest()->get();
+{
+    $sizes = Size::latest()->get();
+    return response()->json([
+        'data' => $sizes
+    ]);
+}
 
-        return response()->json([
-            'sizes' => $sizes
-        ]);
-    }
 
     // Guardar una nueva talla
     public function store(AddSizeRequest $request)
