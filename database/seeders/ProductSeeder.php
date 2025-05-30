@@ -21,14 +21,14 @@ class ProductSeeder extends Seeder
         $productos = [
             // Juguetes
             ['name' => 'Lego City', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'products/lego city.jpg'],
-            ['name' => 'Lego Star Wars', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'lego star wars.jpg'],
-            ['name' => 'Lego Technic', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'lego technic.jpg'],
-            ['name' => 'Lego Friends', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'lego friends.jpg'],
+            ['name' => 'Lego Star Wars', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'products/lego star wars.jpg'],
+            ['name' => 'Lego Technic', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'products/lego technic.jpg'],
+            ['name' => 'Lego Friends', 'brand' => 'Lego', 'category' => 'Juguetes', 'imagen' => 'products/lego friends.jpg'],
 
-            ['name' => 'Barbie', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'barbie.jpg'],
-            ['name' => 'Hot Wheels', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'hot wheels.jpg'],
-            ['name' => 'Fisher-Price Laugh & Learn', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'fisher price 12.jpg'],
-            ['name' => 'Uno (juego de cartas)', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'uno juego de cartas.jpg'],
+            ['name' => 'Barbie', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'products/barbie.jpg'],
+            ['name' => 'Hot Wheels', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'products/hot wheels.jpg'],
+            ['name' => 'Fisher-Price Laugh & Learn', 'brand' => 'Mattel', 'category' => 'Juguetes', 'products/imagen' => 'fisher price 12.jpg'],
+            ['name' => 'Uno (juego de cartas)', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'products/uno juego de cartas.jpg'],
 
             ['name' => 'Monopoly', 'brand' => 'Hasbro', 'category' => 'Juguetes', 'imagen' => 'monopoly.jpg'],
             ['name' => 'Nerf Gun', 'brand' => 'Hasbro', 'category' => 'Juguetes', 'imagen' => 'nerf gun.jpg'],
