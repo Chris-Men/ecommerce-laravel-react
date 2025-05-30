@@ -162,10 +162,8 @@ class ProductSeeder extends Seeder
                 'qty' => rand(10, 50),
                 'price' => rand(50, 125),
                 'description' => 'Producto de la marca ' . $item['brand'],
-                'thumbnail' => $item['imagen'],
-                'first_image' => $item['imagen'],
-                'second_image' => $item['imagen'],
-                'third_image' => $item['imagen'],
+                'image' => $item['imagen'],
+
                 'status' => true,
                 'category_id' => $category->id,
                 'brand_id' => $brand->id,

@@ -7,19 +7,11 @@ use Illuminate\Validation\Rule;
 
 class AddProductRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         $productId = $this->route('product') ? $this->route('product')->id : null;
@@ -38,10 +30,7 @@ class AddProductRequest extends FormRequest
             'brand_id' => 'required|exists:brands,id',
             'description' => 'required|string|max:5000',
 
-            'thumbnail' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:2048',
-            'first_image' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:2048',
-            'second_image' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:2048',
-            'third_image' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ];
     }
 
@@ -64,21 +53,9 @@ class AddProductRequest extends FormRequest
             'price.required' => 'The price field is required',
             'price.min' => 'The price must be at least 0',
 
-            'thumbnail.image' => 'The thumbnail must be an image',
-            'thumbnail.mimes' => 'The thumbnail must be a file of type: png, jpg, jpeg, webp',
-            'thumbnail.max' => 'The thumbnail may not be greater than 2MB',
-
-            'first_image.image' => 'The first image must be an image',
-            'first_image.mimes' => 'The first image must be a file of type: png, jpg, jpeg, webp',
-            'first_image.max' => 'The first image may not be greater than 2MB',
-
-            'second_image.image' => 'The second image must be an image',
-            'second_image.mimes' => 'The second image must be a file of type: png, jpg, jpeg, webp',
-            'second_image.max' => 'The second image may not be greater than 2MB',
-
-            'third_image.image' => 'The third image must be an image',
-            'third_image.mimes' => 'The third image must be a file of type: png, jpg, jpeg, webp',
-            'third_image.max' => 'The third image may not be greater than 2MB',
+            'image.image' => 'The image must be an image',
+            'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, webp',
+            'image.max' => 'The image may not be greater than 2MB',
         ];
     }
 }

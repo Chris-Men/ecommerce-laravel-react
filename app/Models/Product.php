@@ -8,8 +8,7 @@ class Product extends Model
 {
     protected $fillable = [
         'name', 'slug', 'qty', 'price', 'description',
-        'thumbnail', 'first_image', 'second_image', 'third_image',
-        'status', 'category_id', 'brand_id', 'color_id', 'size_id'
+        'image', 'status', 'category_id', 'brand_id', 'color_id', 'size_id'
     ];
 
     public function category()
@@ -36,6 +35,4 @@ class Product extends Model
     {
         return $this->hasMany(Review::class)->with('user')->latest();
     }
-
-
 }

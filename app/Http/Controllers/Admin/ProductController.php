@@ -12,18 +12,12 @@ use App\Http\Requests\AddProductRequest;
 
 class ProductController extends Controller
 {
-    /**
-     * Listar todos los productos
-     */
     public function index()
     {
         $products = Product::with(['category', 'brand', 'size', 'color'])->get();
         return ProductResource::collection($products);
     }
 
-    /**
-     * Crear un nuevo producto
-     */
     public function store(AddProductRequest $request)
     {
         try {
@@ -33,7 +27,7 @@ class ProductController extends Controller
                 'name' => $validated['name'],
                 'slug' => $this->generateUniqueSlug($validated['name']),
                 'price' => $validated['price'],
-                'description' => $validated['description'], // Corregido: usar 'description' consistentemente
+                'description' => $validated['description'],
                 'status' => $request->has('status') ? (bool)$request->status : true,
                 'qty' => $validated['qty'],
                 'category_id' => $validated['category_id'],
@@ -42,12 +36,9 @@ class ProductController extends Controller
                 'color_id' => $validated['color_id'],
             ];
 
-            // Guardar imágenes
-            foreach (['thumbnail', 'first_image', 'second_image', 'third_image'] as $imageField) {
-                if ($request->hasFile($imageField)) {
-                    $data[$imageField] = $request->file($imageField)->store('products', 'public');
-                    Log::info("$imageField guardado en: " . $data[$imageField]);
-                }
+            if ($request->hasFile('image')) {
+                $data['image'] = $request->file('image')->store('products', 'public');
+                Log::info("Imagen guardada en: " . $data['image']);
             }
 
             $product = Product::create($data);
@@ -59,8 +50,6 @@ class ProductController extends Controller
 
         } catch (\Throwable $e) {
             Log::error('Error en store(): ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-
             return response()->json([
                 'message' => 'Error al crear producto',
                 'error' => $e->getMessage()
@@ -68,32 +57,23 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Actualizar un producto existente
-     */
     public function update(AddProductRequest $request, Product $product)
     {
         try {
             $validated = $request->validated();
 
-            // Reemplazar imágenes si fueron enviadas
-            foreach (['thumbnail', 'first_image', 'second_image', 'third_image'] as $imageField) {
-                if ($request->hasFile($imageField)) {
-                    // Eliminar imagen antigua si existe
-                    if ($product->$imageField) {
-                        Storage::disk('public')->delete($product->$imageField);
-                    }
-                    // Guardar nueva imagen
-                    $product->$imageField = $request->file($imageField)->store('products', 'public');
-                    Log::info("$imageField actualizado en: " . $product->$imageField);
+            if ($request->hasFile('image')) {
+                if ($product->image) {
+                    Storage::disk('public')->delete($product->image);
                 }
+                $product->image = $request->file('image')->store('products', 'public');
+                Log::info("Imagen actualizada en: " . $product->image);
             }
 
-            // Actualizar campos
             $product->name = $validated['name'];
             $product->slug = $this->generateUniqueSlug($validated['name'], $product->id);
             $product->price = $validated['price'];
-            $product->description = $validated['description']; // Corregido: usar 'description'
+            $product->description = $validated['description'];
             $product->status = $request->has('status') ? (bool)$request->status : $product->status;
             $product->qty = $validated['qty'];
             $product->category_id = $validated['category_id'];
@@ -110,8 +90,6 @@ class ProductController extends Controller
 
         } catch (\Throwable $e) {
             Log::error('Error en update(): ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-
             return response()->json([
                 'message' => 'Error al actualizar producto',
                 'error' => $e->getMessage()
@@ -119,17 +97,11 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Eliminar un producto
-     */
     public function destroy(Product $product)
     {
         try {
-            // Eliminar imágenes asociadas
-            foreach (['thumbnail', 'first_image', 'second_image', 'third_image'] as $imageField) {
-                if ($product->$imageField) {
-                    Storage::disk('public')->delete($product->$imageField);
-                }
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
             }
 
             $product->delete();
@@ -140,7 +112,6 @@ class ProductController extends Controller
 
         } catch (\Throwable $e) {
             Log::error('Error en destroy(): ' . $e->getMessage());
-
             return response()->json([
                 'message' => 'Error al eliminar producto',
                 'error' => $e->getMessage()
@@ -148,9 +119,6 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Mostrar un solo producto con detalles
-     */
     public function show($id)
     {
         $product = Product::with(['category', 'brand', 'size', 'color'])
@@ -160,9 +128,6 @@ class ProductController extends Controller
         return response()->json(new ProductResource($product));
     }
 
-    /**
-     * Generar slug único
-     */
     private function generateUniqueSlug($name, $ignoreId = null)
     {
         $slug = Str::slug($name);

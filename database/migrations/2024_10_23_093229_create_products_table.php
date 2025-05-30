@@ -19,10 +19,8 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->longText('description')->nullable();
 
-            $table->string('thumbnail')->nullable();
-            $table->string('first_image')->nullable();
-            $table->string('second_image')->nullable();
-            $table->string('third_image')->nullable();
+            // Imagen principal (ahora se llama 'image')
+            $table->string('image')->nullable();
             $table->boolean('status')->default(true);
 
             // Relaciones
@@ -32,7 +30,6 @@ return new class extends Migration
             $table->foreignId('size_id')->constrained()->cascadeOnDelete();
 
             $table->timestamps();
-
         });
     }
 

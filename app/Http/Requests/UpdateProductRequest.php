@@ -22,39 +22,31 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|max:255|unique:products,name,'.$this->product->id,
+            'name' => 'required|max:255|unique:products,name,' . $this->product->id,
             'qty' => 'required|numeric',
             'price' => 'required|numeric',
             'color_id' => 'required',
             'size_id' => 'required',
             'category_id' => 'required',
             'brand_id' => 'required',
-            'desc' => 'required|max:5000',
-            'thumbnail' => 'image|mimes:png,jpg,jpeg,webp|max:2048',
-            'first_image' => 'image|mimes:png,jpg,jpeg,webp|max:2048',
-            'second_image' => 'image|mimes:png,jpg,jpeg,webp|max:2048',
-            'third_image' => 'image|mimes:png,jpg,jpeg,webp|max:2048',
+            'description' => 'required|max:5000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ];
     }
 
     public function messages()
     {
         return [
-            'color_id.required' => 'The color field is required',
-            'size_id.required' => 'The size field is required',
-            'category_id.required' => 'The category field is required',
-            'brand_id.required' => 'The brand field is required',
-            'desc.required' => 'The description field is required',
-            'desc.max' => 'The description field must not be greater than :max characters',
-            'qty.required' => 'The quantity field is required',
-            'thumbnail.max' => 'The thumbnail must not be greater than 2MB',
-            'thumbnail.image' => 'The thumbnail must be an image',
-            'first_image.max' => 'The first image must not be greater than 2MB',
-            'first_image.image' => 'The first image must be an image',
-            'second_image.max' => 'The second image must not be greater than 2MB',
-            'second_image.image' => 'The second image must be an image',
-            'third_image.max' => 'The third image must not be greater than 2MB',
-            'third_image.image' => 'The third image must be an image',
+            'color_id.required' => 'The color field is required.',
+            'size_id.required' => 'The size field is required.',
+            'category_id.required' => 'The category field is required.',
+            'brand_id.required' => 'The brand field is required.',
+            'description.required' => 'The description field is required.',
+            'description.max' => 'The description must not be greater than :max characters.',
+            'qty.required' => 'The quantity field is required.',
+            'price.required' => 'The price field is required.',
+            'image.max' => 'The image must not be greater than 2MB.',
+            'image.image' => 'The image must be a valid image file.',
         ];
     }
 }
