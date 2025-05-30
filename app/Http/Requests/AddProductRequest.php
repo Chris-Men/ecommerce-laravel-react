@@ -30,7 +30,7 @@ class AddProductRequest extends FormRequest
             'brand_id' => 'required|exists:brands,id',
             'description' => 'required|string|max:5000',
 
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ];
     }
 
@@ -55,7 +55,7 @@ class AddProductRequest extends FormRequest
 
             'image.image' => 'The image must be an image',
             'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, webp',
-
+            'image.max' => 'The image may not be greater than 2MB',
         ];
     }
 }

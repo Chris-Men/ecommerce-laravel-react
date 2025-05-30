@@ -10,10 +10,8 @@ class ReviewController extends Controller
 {
     // Obtener lista de todas las reseñas
     public function index()
-
-
     {
-       $reviews = Review::with(['user:id,name', 'product:id,name'])->latest()->get();
+        $reviews = Review::latest()->get();
 
         return response()->json([
             'message' => 'Lista de reseñas',
