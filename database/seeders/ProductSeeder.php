@@ -27,7 +27,8 @@ class ProductSeeder extends Seeder
 
             ['name' => 'Barbie', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'products/barbie.jpg'],
             ['name' => 'Hot Wheels', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'products/hot wheels.jpg'],
-            ['name' => 'Fisher-Price Laugh & Learn', 'brand' => 'Mattel', 'category' => 'Juguetes', 'products/imagen' => 'fisher price 12.jpg'],
+            ['name' => 'Fisher-Price Laugh & Learn', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'products/fisher price 12.jpg'],
+
             ['name' => 'Uno (juego de cartas)', 'brand' => 'Mattel', 'category' => 'Juguetes', 'imagen' => 'products/uno juego de cartas.jpg'],
 
             ['name' => 'Monopoly', 'brand' => 'Hasbro', 'category' => 'Juguetes', 'imagen' => 'monopoly.jpg'],
