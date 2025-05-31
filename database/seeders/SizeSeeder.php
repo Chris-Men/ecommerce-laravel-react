@@ -10,7 +10,7 @@ class SizeSeeder extends Seeder
 {
     public function run(): void
     {
-        $tallas = ['S', 'M', 'L', 'XL', 'XXL'];
+        $tallas = ['S', 'M', 'L', 'XL', 'XXL','.'];
 
         foreach ($tallas as $talla) {
             Size::create([

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -13,12 +12,30 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        $SuperAdmin = User::create(attributes:[
-            'name' => 'User',
-            'email' => 'User@example.com',
+        // Usuario principal
+        User::create([
+            'name' => 'Administrador Principal',
+            'email' => 'admin@example.com',
             'password' => bcrypt('password'),
         ]);
 
+        // Otros 7 usuarios con nuevos nombres y correos
+        $usuarios = [
+            ['name' => 'Elena Morales', 'email' => 'elena.morales@example.com'],
+            ['name' => 'Diego Castro', 'email' => 'diego.castro@example.com'],
+            ['name' => 'Valeria Ruiz', 'email' => 'valeria.ruiz@example.com'],
+            ['name' => 'Andrés Navarro', 'email' => 'andres.navarro@example.com'],
+            ['name' => 'Camila Ríos', 'email' => 'camila.rios@example.com'],
+            ['name' => 'Fernando León', 'email' => 'fernando.leon@example.com'],
+            ['name' => 'Natalia Franco', 'email' => 'natalia.mendoza@example.com'],
+        ];
+
+        foreach ($usuarios as $usuario) {
+            User::create([
+                'name' => $usuario['name'],
+                'email' => $usuario['email'],
+                'password' => bcrypt('password'),
+            ]);
+        }
     }
 }

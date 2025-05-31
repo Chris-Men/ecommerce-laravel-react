@@ -9,7 +9,7 @@ class ColorSeeder extends Seeder
 {
     public function run(): void
     {
-        $colores = ['Rojo', 'Azul', 'Verde', 'Negro', 'Blanco', 'Marron' , 'Celeste' , 'Rosado' , ' Gris' , 'Celeste'];
+        $colores = ['Rojo', 'Azul', 'Verde', 'Negro', 'Blanco', 'Marron' , 'Celeste' , 'Rosado' , ' Gris' , 'Celeste','.'];
 
         foreach ($colores as $color) {
         Color::create([
