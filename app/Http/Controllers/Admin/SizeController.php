@@ -12,14 +12,16 @@ use Illuminate\Http\Request;
 class SizeController extends Controller
 {
     // Listar todas las tallas
-    public function index()
-    {
-        $sizes = Size::latest()->get();
+   public function index()
+{
+    $sizes = Size::latest()->get();
 
-        return response()->json([
-            'sizes' => $sizes
-        ]);
-    }
+    return response()->json([
+        'success' => true,
+        'data' => $sizes,
+        'sizes' => $sizes  // Para mantener compatibilidad con la vista original
+    ]);
+}
 
     // Guardar una nueva talla
     public function store(AddSizeRequest $request)

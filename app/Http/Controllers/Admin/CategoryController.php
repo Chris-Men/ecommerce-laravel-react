@@ -11,7 +11,12 @@ use App\Http\Requests\UpdateCategoryRequest;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
+
+
 {
+
+
+
     public function index()
     {
         $categories = Category::latest()->get();
@@ -21,6 +26,10 @@ class CategoryController extends Controller
             'data' => $categories
         ]);
     }
+
+
+
+
 
     public function show($id)
     {

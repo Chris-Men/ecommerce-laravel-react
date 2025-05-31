@@ -10,14 +10,23 @@ use Illuminate\Support\Str;
 
 class ColorController extends Controller
 {
-    public function index()
-    {
-        $colors = Color::latest()->get();
 
-        return response()->json([
-            'colors' => $colors
-        ]);
-    }
+
+
+    public function index()
+{
+    $colors = Color::latest()->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $colors,
+        'colors' => $colors  // Para mantener compatibilidad con la vista original
+    ]);
+}
+
+
+
+
 
     public function store(AddColorRequest $request)
     {

@@ -14,14 +14,17 @@ class BrandController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        // Obtener todas las marcas y devolverlas como respuesta JSON
-        $brands = Brand::latest()->get();
-        return response()->json([
-            'brands' => $brands
-        ]);
-    }
+   public function index()
+{
+    // Obtener todas las marcas y devolverlas como respuesta JSON
+    $brands = Brand::latest()->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $brands,
+        'brands' => $brands  // Para mantener compatibilidad con la vista original
+    ]);
+}
 
     /**
      * Store a newly created resource in storage.
