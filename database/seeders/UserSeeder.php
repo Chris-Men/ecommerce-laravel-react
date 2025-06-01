@@ -14,8 +14,8 @@ class UserSeeder extends Seeder
     {
         // Usuario principal
         User::create([
-            'name' => 'Administrador Principal',
-            'email' => 'admin@example.com',
+            'name' => 'User',
+            'email' => 'user@example.com',
             'password' => bcrypt('password'),
         ]);
 
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             ['name' => 'Andrés Navarro', 'email' => 'andres.navarro@example.com'],
             ['name' => 'Camila Ríos', 'email' => 'camila.rios@example.com'],
             ['name' => 'Fernando León', 'email' => 'fernando.leon@example.com'],
-            ['name' => 'Natalia Franco', 'email' => 'natalia.mendoza@example.com'],
+            ['name' => 'Natalia Franco', 'email' => 'natalia.franco@example.com'],
         ];
 
         foreach ($usuarios as $usuario) {
