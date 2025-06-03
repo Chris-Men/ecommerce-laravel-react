@@ -144,4 +144,27 @@ class ProductController extends Controller
 
         return $slug;
     }
+
+    //activar o desactivar productos
+
+     public function toggleAvailability(Product $product)
+    {
+        try {
+            // Cambiar el estado del producto
+            $product->status = !$product->status;
+            $product->save();
+
+            return response()->json([
+                'message' => 'Estado del producto actualizado exitosamente',
+                'data' => new ProductResource($product)
+            ], 200);
+
+        } catch (\Throwable $e) {
+            Log::error('Error en toggleAvailability(): ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error al actualizar el estado del producto',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
