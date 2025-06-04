@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ProfileController;
+
 
 // =========================
 // IMPORTACIÓN DE CONTROLADORES
@@ -23,6 +25,7 @@ use App\Http\Controllers\Admin\UserController;
 
 // Auth para usuarios
 use App\Http\Controllers\Api\AuthUserController;
+
 
 // Funcionalidad para usuarios
 use App\Http\Controllers\Api\ProductController as UserProductController;
@@ -54,8 +57,16 @@ Route::middleware('auth:admin-api')->prefix('admin')->group(function () {
     // Cierre de sesión
     Route::post('logout', [AuthController::class, 'logout']);
 
+    // Perfil
+    Route::get('/profile', [AuthUserController::class, 'showProfile']);
+    Route::put('/profile', [AuthUserController::class, 'updateProfile']);
+    Route::delete('/profile/image', [AuthUserController::class, 'removeProfileImage']);
+
     // Dashboard principal
     Route::get('dashboard', [AdminController::class, 'index']);
+
+
+
 
 
 
@@ -80,6 +91,8 @@ Route::apiResource('brands', BrandController::class)
     ->names("admin.brands");
 
 
+
+ Route::post('products/{product}/toggle-availability', [ProductController::class, 'toggleAvailability']);
 
 
 
@@ -136,6 +149,10 @@ Route::prefix('user')->group(function () {
 
 Route::middleware('auth:api')->group(function () {
 
+
+    Route::get('/profile', [AuthUserController::class, 'showProfile']);
+    Route::put('/profile', [AuthUserController::class, 'updateProfile']);
+    Route::delete('/profile/image', [AuthUserController::class, 'removeProfileImage']);
     //cupones
     Route::get('coupons', [\App\Http\Controllers\Api\CouponController::class, 'index']);
 
@@ -171,4 +188,5 @@ Route::middleware('auth:api')->group(function () {
 
     //reseñas
     Route::apiResource('reviews', UserReviewController::class);
+
 });
