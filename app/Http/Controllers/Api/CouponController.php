@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
 use Illuminate\Http\Request;
+use App\Http\Resources\CouponResource;
 
 class CouponController extends Controller
 {
@@ -17,7 +18,7 @@ class CouponController extends Controller
 
         return response()->json([
             'message' => 'Lista de cupones válidos',
-            'coupons' => $coupons
+            'coupons' => CouponResource::collection($coupons)
         ]);
     }
 
@@ -35,7 +36,7 @@ class CouponController extends Controller
         if ($coupon && $coupon->checkIfValid()) {
             return response()->json([
                 'message' => 'Cupón aplicado exitosamente',
-                'coupon' => $coupon
+                'coupon' => new CouponResource($coupon)
             ]);
         }
 
