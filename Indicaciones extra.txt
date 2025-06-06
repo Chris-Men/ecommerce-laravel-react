@@ -1,0 +1,31 @@
+
+Luego de clonar el repositorio de admin
+
+colocar el siguiente comando en la terminal de visual studio
+
+tail -f storage/logs/laravel.log
+
+este crea una carpeta en storage/app/public
+
+donde se deberán crear 2 carpetas llamandas 
+
+categories y products
+
+en donde se deberán descomprimir los archivos de imágenes
+
+que poseen los mismo nombre.
+
+
+luego de a ver descargado las dependencias con 
+
+npm install
+
+y haber migrado la base de datos con 
+
+php artisan migrate
+
+colocar el siguiente comando para migrar los seeders
+
+ php artisan migrate:fresh --seed
+
+
